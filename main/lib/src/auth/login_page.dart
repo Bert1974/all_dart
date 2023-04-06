@@ -19,9 +19,9 @@ class _LoginPageState extends State<LoginPage> {
 
   static final List<R> _layout = [
     R([
-      C({'xs': 6}, offsets: {'xs': 3}, data: 'type'),
+      C({'xs': 6, 'md': 12}, offsets: {'xs': 3, 'md': 0}, data: 'type'),
       C({'xs': 12}, data: Cell(Var2.text, 'Login', varName: 'name')),
-      C({'xs': 12}, data: Cell(Var2.text, 'Password', varName: 'password')),
+      C({'xs': 12}, data: Cell(Var2.password, 'Password', varName: 'password')),
       C({'xs': 6}, offsets: {'xs': 3}, data: Cell(Var2.button, "Connect")),
     ])
   ];
