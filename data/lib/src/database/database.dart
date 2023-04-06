@@ -58,10 +58,12 @@ abstract class Database {
 
   Database();
 
+  void dispose() {}
+
   factory Database.openNetwork() => NetworkDatabase();
 
   //for server
-  static Database openStore() => (_store ??= openStore_())!;
+  static Database? openStore() => (_store ??= openStore_());
 
 /*  FutureOr<Database> forIsolate(ByteData reference) async {
     var result = _store!.setReference(reference)._(reference);

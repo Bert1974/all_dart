@@ -17,7 +17,8 @@ class BaseMyWindowState<T extends BaseMyWindow<T>> extends State<T> {
 
   @override
   Widget build(BuildContext context) {
-    return Provider(create: (context) => pageContext, child: const MyApp());
+    return Provider(
+        create: (context) => pageContext, lazy: true, child: const MyApp());
   }
 
   askClose(void Function() doExit) {

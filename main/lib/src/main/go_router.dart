@@ -21,27 +21,32 @@ String? checkAuthenticated(context, state) {
   return null;
 }
 
-final appRouter = GoRouter(routes: [
-  GoRoute(
-      path: '/',
-      redirect: checkAuthenticated,
-      // builder: (context, state) => const LoginPage()
-      pageBuilder: (context, state) =>
-          createPage(context, state, const TestPage())),
-  GoRoute(
-      path: '/settings',
-      redirect: checkAuthenticated,
-      // builder: (context, state) => const SettingsView()
-      pageBuilder: (context, state) =>
-          createPage(context, state, const SettingsPage())),
-  GoRoute(
-      path: '/login',
-      redirect: (context, state) {
-        if (AuthenticationHandler.of(context).value.user != null) {
-          return '/';
-        }
-        return null;
-      },
-      pageBuilder: (context, state) =>
-          createPage(context, state, const LoginPage())),
-]);
+final appRouter = MyRouter();
+
+class MyRouter extends GoRouter {
+  MyRouter()
+      : super(routes: [
+          GoRoute(
+              path: '/',
+              redirect: checkAuthenticated,
+              // builder: (context, state) => const LoginPage()
+              pageBuilder: (context, state) =>
+                  createPage(context, state, const TestPage())),
+          GoRoute(
+              path: '/settings',
+              redirect: checkAuthenticated,
+              // builder: (context, state) => const SettingsView()
+              pageBuilder: (context, state) =>
+                  createPage(context, state, const SettingsPage())),
+          GoRoute(
+              path: '/login',
+              redirect: (context, state) {
+                if (AuthenticationHandler.of(context).value.user != null) {
+                  return '/';
+                }
+                return null;
+              },
+              pageBuilder: (context, state) =>
+                  createPage(context, state, const LoginPage())),
+        ]);
+}

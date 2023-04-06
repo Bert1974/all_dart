@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 export 'main.stub.dart'
     if (dart.library.io) 'main.desktop.dart'
@@ -6,6 +7,9 @@ export 'main.stub.dart'
 
 class PageContext {
   BuildContext? context;
+
+  static PageContext of(BuildContext context) =>
+      Provider.of<PageContext>(context, listen: false);
 }
 
 class R {

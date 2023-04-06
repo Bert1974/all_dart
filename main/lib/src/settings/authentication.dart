@@ -92,6 +92,11 @@ class DBHandler {
     switch (type) {
       case DatabaseTypes.local:
         db_ = Database.openStore();
+        if (db_ == null) {
+          return;
+        }
+        db?.dispose();
+        db = null;
         await db_.open();
         break;
       case DatabaseTypes.network:

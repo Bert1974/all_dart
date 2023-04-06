@@ -2,18 +2,32 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:main/main.dart';
 import 'package:main/src/settings/authentication.dart';
-import 'package:provider/provider.dart';
 
 enum MenuCmd { about, logout }
 
-class AppPage extends StatelessWidget {
+class AppPage extends StatefulWidget {
   final Widget child;
 
   const AppPage({super.key, required this.child});
 
   @override
+  State<AppPage> createState() => _AppPageState();
+}
+
+class _AppPageState extends State<AppPage> {
+  @override
+  void initState() {
+    super.initState();
+    PageContext.of(context).context = context;
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    Provider.of<PageContext?>(context)?.context = context;
     var auth = AuthenticationHandler.of(context);
     return ScaffoldMessenger(
         child: Scaffold(
@@ -79,6 +93,6 @@ class AppPage extends StatelessWidget {
             // In contrast to the default ListView constructor, which requires
             // building all Widgets up front, the ListView.builder constructor lazily
             // builds Widgets as they’re scrolled into view.
-            body: child));
+            body: widget.child));
   }
 }

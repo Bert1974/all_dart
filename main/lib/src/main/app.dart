@@ -92,7 +92,15 @@ class _MyAppState extends State<MyApp> {
                         theme: ThemeData(),
                         darkTheme: ThemeData.dark(),
                         themeMode: _settings.themeController.themeMode,
+                        debugShowCheckedModeBanner: false,
 
+                        /* routeInformationParser:
+                        appRouter.routeInformationParser,
+                        routerDelegate: appRouter.routerDelegate,
+                        routeInformationProvider:
+                        appRouter.routeInformationProvider,
+                        backButtonDispatcher: appRouter.backButtonDispatcher,
+*/
                         routerConfig: appRouter,
                       );
                     },

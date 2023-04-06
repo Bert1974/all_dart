@@ -13,7 +13,9 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   int disabled = 0;
-  DatabaseTypes _type = DatabaseTypes.network;
+  DatabaseTypes _type = Database.openStore() != null
+      ? DatabaseTypes.local
+      : DatabaseTypes.network;
 
   static final List<R> _layout = [
     R([
@@ -67,6 +69,10 @@ class _LoginPageState extends State<LoginPage> {
                                         lookupfunction: (n) {
                                           if (n is String) {
                                             if (n == "type") {
+                                              if (Database.openStore() ==
+                                                  null) {
+                                                return null;
+                                              }
                                               return Row(
                                                 mainAxisSize: MainAxisSize.min,
                                                 mainAxisAlignment:

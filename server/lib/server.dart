@@ -61,7 +61,7 @@ void startServer(data) async {
   // final connection = Connection.forServer();
 //  final userBox = connection.box<User>();
 
-  final Database connection = Database.openStore();
+  final Database connection = Database.openStore()!;
   connection.setReference(reference);
 
   app.all('*', cors(/*origin: '127.0.0.1:2222')*/));

@@ -61,6 +61,14 @@ class ObjectBoxDatabase extends Database {
     seed();
   }
 
+  @override
+  void dispose() {
+    if (storeInstance != null) {
+      storeInstance!.close();
+      storeInstance = null;
+    }
+  }
+
   _init() {
     usersBox = store!.box<UserModel>();
     userDataBox = store!.box<UserSettingsModel>();

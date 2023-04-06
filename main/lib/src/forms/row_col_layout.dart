@@ -144,7 +144,7 @@ class RowColLayout extends StatelessWidget {
         currentrow.add(SizedBox(
             width: realw,
             child: Column(mainAxisSize: MainAxisSize.max, children: widget)));
-      } else {
+      } else if (widget != null) {
         currentrow.add(SizedBox(
             width: realw,
             child: Column(mainAxisSize: MainAxisSize.max, children: [widget])));
@@ -165,6 +165,6 @@ class RowColLayout extends StatelessWidget {
       return _doLayoutArray(
           c.data as List<R>, size, BoxConstraints(maxWidth: realw), _Layout());
     }
-    throw UnsupportedError('Not implmented');
+    return null;
   }
 }
