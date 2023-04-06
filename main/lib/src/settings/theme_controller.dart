@@ -56,7 +56,7 @@ class ThemeController with ChangeNotifier {
 
     if (await settingHandler.updateSettings(UserSettingTypes.theme,
         (ThemeSettings().._themeMode = newThemeMode).toJson())) {
-      notifyListeners();
+      //_auth.refresh() has been called
     }
   }
 

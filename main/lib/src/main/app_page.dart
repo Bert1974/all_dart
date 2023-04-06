@@ -29,7 +29,7 @@ class AppPage extends StatelessWidget {
                     } else {*/
                       if (Navigator.canPop(context)) {
                         Navigator.pop(context);
-                      } else if (auth.value.token != null) {
+                      } else if (auth.value.user != null) {
                         await auth.logout(context);
                       } else {
                         ;
@@ -53,13 +53,13 @@ class AppPage extends StatelessWidget {
                     itemBuilder: (context) => [
                           const PopupMenuItem<MenuCmd?>(
                               value: MenuCmd.about, child: Text("About")),
-                          if (auth.value.token != null)
+                          if (auth.value.user != null)
                             const PopupMenuItem<MenuCmd?>(
                                 value: MenuCmd.logout, child: Text("Log out"))
                         ]),
               ]),
               actions: [
-                if (auth.value.token != null)
+                if (auth.value.user != null)
                   IconButton(
                     icon: const Icon(Icons.settings),
                     padding: EdgeInsets.zero,

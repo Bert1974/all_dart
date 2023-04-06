@@ -11,11 +11,9 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => _LoginPageState();
 }
 
-enum _TypeTab { local, network }
-
 class _LoginPageState extends State<LoginPage> {
   int disabled = 0;
-  _TypeTab _type = _TypeTab.network;
+  DatabaseTypes _type = DatabaseTypes.network;
 
   static final List<R> _layout = [
     R([
@@ -77,11 +75,13 @@ class _LoginPageState extends State<LoginPage> {
                                                   Flexible(
                                                       child: ListTile(
                                                     title: const Text('Local'),
-                                                    leading: Radio<_TypeTab>(
-                                                      value: _TypeTab.local,
+                                                    leading:
+                                                        Radio<DatabaseTypes>(
+                                                      value:
+                                                          DatabaseTypes.local,
                                                       groupValue: _type,
-                                                      onChanged:
-                                                          (_TypeTab? value) {
+                                                      onChanged: (DatabaseTypes?
+                                                          value) {
                                                         if (value != null) {
                                                           setState(() {
                                                             _type = value;
@@ -94,11 +94,13 @@ class _LoginPageState extends State<LoginPage> {
                                                       child: ListTile(
                                                     title:
                                                         const Text('Network'),
-                                                    leading: Radio<_TypeTab>(
-                                                      value: _TypeTab.network,
+                                                    leading:
+                                                        Radio<DatabaseTypes>(
+                                                      value:
+                                                          DatabaseTypes.network,
                                                       groupValue: _type,
-                                                      onChanged:
-                                                          (_TypeTab? value) {
+                                                      onChanged: (DatabaseTypes?
+                                                          value) {
                                                         if (value != null) {
                                                           setState(() {
                                                             _type = value;
@@ -130,22 +132,18 @@ class _LoginPageState extends State<LoginPage> {
     var cipform = Form.of(context);
 
     if (cipform.validate()) {
-      switch (_type) {
-        case _TypeTab.local:
-          break;
-        case _TypeTab.network:
-          {
-            setState(() {
-              disabled++;
-            });
-            var auth = AuthenticationHandler.of(this.context);
-            await auth.login(this.context, _login);
-            setState(() {
-              disabled--;
-            });
-          }
-          break;
-      }
+      setState(() {
+        disabled++;
+      });
+      DBHandler db = DBHandler.of(context);
+      var auth = AuthenticationHandler.of(this.context);
+
+      await db.open(_type);
+      await auth.login(this.context, Login.fromJson(_login));
+
+      setState(() {
+        disabled--;
+      });
     }
   }
 }

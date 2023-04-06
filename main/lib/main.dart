@@ -4,8 +4,6 @@ export 'main.stub.dart'
     if (dart.library.io) 'main.desktop.dart'
     if (dart.library.js) 'main.web.dart';
 
-const String baseUrl = 'http://127.0.0.1:2222/';
-
 class PageContext {
   BuildContext? context;
 }

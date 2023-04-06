@@ -4,42 +4,49 @@ import 'package:data/data.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:main/main.dart';
 import 'package:provider/provider.dart';
 
 class LoginState {
-  String? token;
   User? user;
 
-  LoginState._(this.user, this.token);
+  LoginState._(this.user);
 
-  static login(User user, String token) {
-    return LoginState._(user, token);
+  static login(User user) {
+    return LoginState._(user);
   }
 
   static logout() {
-    return LoginState._(null, null);
+    return LoginState._(null);
   }
 
+/*
   post(String url, Map<String, dynamic> data) =>
       Network(baseUrl, token).postData(url, data);
+*/
+  LoginState updateUser(User user) {
+    return LoginState._(user);
+  }
 }
 
 class AuthenticationHandler extends ChangeNotifier
     implements ValueListenable<LoginState> {
   LoginState _value;
-  AuthenticationHandler() : _value = LoginState.logout();
+  final DBHandler _db;
+  AuthenticationHandler(DBHandler db)
+      : _value = LoginState.logout(),
+        _db = db;
 
   static AuthenticationHandler of(BuildContext context) {
     return Provider.of<AuthenticationHandler>(context, listen: false);
   }
 
-  login(BuildContext context, Map<String, dynamic> data) async {
-    var res = await NetworkHandler.of(context).postData('login', data);
-    if (res.success) {
-      var login =
-          LoginState.login(User.fromJson(res.data['user']), res.data['token']);
+  login(BuildContext context, Login login) async {
+    User? user = await _db.db!.login(login.name, login.password);
+
+    if (user != null) {
+      var login = LoginState.login(user);
       _value = login;
+      notifyListeners();
       //    var location = GoRouter.of(context).location;
       //   var qp = GoRouterState.of(context).queryParam;
       //   if (queryParam.containes())
@@ -49,14 +56,15 @@ class AuthenticationHandler extends ChangeNotifier
     }
   }
 
-  FutureOr<void> refresh(NetworkHandler network) async {
-    var res = await network.postData('currentuser', {});
-    if (res.success) {
-      var login =
-          LoginState.login(User.fromJson(res.data['user']), res.data['token']);
-      _value = login;
-      notifyListeners();
-      //   context.go('/');
+  FutureOr<void> refresh() async {
+    if (value.user != null) {
+      User? user = await _db.db?.check(value.user!);
+      if (user != null) {
+        var login = _value.updateUser(user);
+        _value = login;
+        notifyListeners();
+        //   context.go('/');
+      }
     }
   }
 
@@ -70,7 +78,31 @@ class AuthenticationHandler extends ChangeNotifier
   }
 }
 
-class NetworkHandler {
+class DBHandler {
+  Database? db;
+  DBHandler();
+
+  static DBHandler of(BuildContext context) {
+    return Provider.of<DBHandler>(context, listen: false);
+  }
+
+  open(DatabaseTypes type) async {
+    Database? db_;
+
+    switch (type) {
+      case DatabaseTypes.local:
+        db_ = Database.openStore();
+        await db_.open();
+        break;
+      case DatabaseTypes.network:
+        db_ = Database.openNetwork();
+        break;
+    }
+    db = db_;
+    // User? user = await db_.login(login.name, login.password);
+  }
+}
+/*Handler {
   final AuthenticationHandler auth;
   NetworkHandler(this.auth) {
     //
@@ -82,3 +114,4 @@ class NetworkHandler {
   FutureOr<NetworkResponse> postData(String url, Map<String, dynamic> data) =>
       Network(baseUrl, auth.value.token).postData(url, data);
 }
+*/

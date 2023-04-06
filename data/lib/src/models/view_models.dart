@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:json_annotation/json_annotation.dart';
 
 part 'view_models.g.dart';
@@ -77,22 +79,25 @@ class User {
   Map<String, dynamic> toJson() => _$UserToJson(this);
 }
 
-@JsonSerializable()
 class UserSettings {
   late String? type;
-  late String? data;
+  late dynamic data;
 
-  UserSettings({this.type, this.data});
-  factory UserSettings.fromJson(Map<String, dynamic> json) =>
-      _$UserSettingsFromJson(json);
-  Map<String, dynamic> toJson() => _$UserSettingsToJson(this);
+  UserSettings._(String this.type, Map<String, dynamic> this.data);
 
+  factory UserSettings.fromJson(Map<String, dynamic> json_) =>
+      UserSettings._(json_['type'], json.decode(json_['data']));
+  factory UserSettings.fromJsonString(String type, String? json_) =>
+      UserSettings._(type, json.decode(json_!));
+
+  Map<String, dynamic> toJson() => {'type': type, 'data': json.encode(data)};
+/*
   @override
   bool operator ==(Object other) =>
       other is UserSettings && other.type == type && other.data == data;
 
   @override
-  int get hashCode => type.hashCode * 31 ^ data.hashCode;
+  int get hashCode => type.hashCode * 31 ^ data.hashCode;*/
 }
 
 /*

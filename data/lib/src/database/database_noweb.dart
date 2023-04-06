@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:data/data.dart';
@@ -6,7 +7,7 @@ import 'package:data/objectbox.g.dart';
 
 import 'package:data/src/models/models.dart';
 
-Database openStore_() => ObjectBoxDatabase();
+Database? openStore_() => ObjectBoxDatabase();
 
 extension UserModelExtension on UserModel {
   User toVM(LoginModel login) => User(
@@ -21,7 +22,7 @@ extension UserModelExtension on UserModel {
 }
 
 extension UserSettingsModelExtension on UserSettingsModel {
-  UserSettings toVM() => UserSettings(type: type, data: data);
+  UserSettings toVM() => UserSettings.fromJsonString(type, data);
 }
 
 class ObjectBoxDatabase extends Database {
@@ -29,6 +30,7 @@ class ObjectBoxDatabase extends Database {
   static Store? storeInstance;
   Store? store;
   Box<UserModel>? usersBox;
+  Box<UserSettingsModel>? userDataBox;
   Box<LoginModel>? loginsBox;
   Box<RoleModel>? rolesBox;
   Box<PermissionModel>? permissionBox;
@@ -61,6 +63,7 @@ class ObjectBoxDatabase extends Database {
 
   _init() {
     usersBox = store!.box<UserModel>();
+    userDataBox = store!.box<UserSettingsModel>();
     loginsBox = store!.box<LoginModel>();
     rolesBox = store!.box<RoleModel>();
     permissionBox = store!.box<PermissionModel>();
@@ -125,24 +128,68 @@ class ObjectBoxDatabase extends Database {
     usersBox!.put(user);
   }
 
-  Future<LoginModel?> _getLogin(
-      String type, String name, String password) async {
+  Future<LoginModel?> _getLogin(String type, String name) async {
     var q = loginsBox!
-        .query(LoginModel_.name.equals(name) &
-            LoginModel_.password.equals(password) &
-            LoginModel_.modeltype.equals(type))
+        .query(
+            LoginModel_.name.equals(name) & LoginModel_.modeltype.equals(type))
         .build();
     return await q.findFirstAsync();
   }
 
   @override
   FutureOr<User?> login(String name, String password) async {
-    final result = await _getLogin(Logins.user, name, password);
+    final result = await _getLogin(Logins.user, name);
+
+    if (result != null) {
+      if (result.password == password) {
+        var q2 = usersBox!.query(UserModel_.login.equals(result.id)).build();
+        UserModel user = (await q2.findFirstAsync())!;
+        return user.toVM(result);
+      }
+    }
+    return null;
+  }
+
+  @override
+  Future<User?> checkToken(String name, String token) async {
+    final result = await _getLogin(Logins.user, name);
     if (result != null) {
       var q2 = usersBox!.query(UserModel_.login.equals(result.id)).build();
       UserModel user = (await q2.findFirstAsync())!;
       return user.toVM(result);
     }
     return null;
+  }
+
+  @override
+  Future<User?> check(User user) async {
+    final result = await _getLogin(Logins.user, user.name);
+    if (result != null) {
+      var q2 = usersBox!.query(UserModel_.login.equals(result.id)).build();
+      UserModel user_ = (await q2.findFirstAsync())!;
+
+      if (user_.id == user.id) {
+        return user_.toVM(result);
+      }
+    }
+    return null;
+  }
+
+  @override
+  Future<bool> saveUserSettings(
+      User user, String type, Map<String, dynamic> data) async {
+    UserModel user2 = usersBox!.get(user.id)!;
+    UserSettingsModel? data_ = user2.preferences
+        .map((e) => e as UserSettingsModel?)
+        .firstWhere((element) => element!.type == type, orElse: () => null);
+    if (data_ == null) {
+      data_ = UserSettingsModel(id: 0, type: type, data: json.encode(data));
+      user2.preferences.add(data_);
+      await usersBox!.putAsync(user2);
+    } else {
+      data_.data = json.encode(data);
+      await userDataBox!.putAsync(data_);
+    }
+    return true;
   }
 }

@@ -15,9 +15,10 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final _auth = AuthenticationHandler();
-  late final _network = NetworkHandler(_auth);
-  late final _settings = UserSettingsHandler(_network);
+  final _db = DBHandler();
+  late final _auth = AuthenticationHandler(_db);
+  //late final _network = NetworkHandler(_auth);
+  late final _settings = UserSettingsHandler(_db, _auth);
 
   @override
   void initState() {
@@ -44,10 +45,12 @@ class _MyAppState extends State<MyApp> {
     return MultiProvider(
         providers: [
           ChangeNotifierProvider(lazy: true, create: (context) => _auth),
-          Provider(lazy: true, create: (context) => _network),
-          Provider(lazy: true, create: (context) => _settings)
-          //   ChangeNotifierProvider(
-          //       lazy: true, create: (context) => _themeController,)
+          Provider(lazy: true, create: (context) => _settings),
+          Provider(lazy: true, create: (context) => _db),
+          ChangeNotifierProvider(
+            lazy: true,
+            create: (context) => _settings.themeController,
+          )
         ],
         builder: (context, child) {
           return ValueListenableBuilder(

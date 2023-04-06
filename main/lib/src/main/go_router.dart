@@ -15,7 +15,7 @@ MaterialPage<void> createPage<T extends Widget>(
 }
 
 String? checkAuthenticated(context, state) {
-  if (AuthenticationHandler.of(context).value.token == null) {
+  if (AuthenticationHandler.of(context).value.user == null) {
     return '/login';
   }
   return null;
@@ -37,7 +37,7 @@ final appRouter = GoRouter(routes: [
   GoRoute(
       path: '/login',
       redirect: (context, state) {
-        if (AuthenticationHandler.of(context).value.token != null) {
+        if (AuthenticationHandler.of(context).value.user != null) {
           return '/';
         }
         return null;

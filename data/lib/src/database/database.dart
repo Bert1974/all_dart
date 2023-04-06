@@ -9,11 +9,14 @@ import 'database_stub.dart'
 
 import '../models/view_models.dart';
 
+enum DatabaseTypes { local, network }
+
 class NetworkDatabase extends Database {
   String? _token;
+  var baseUrl = 'http://127.0.0.1:2222/';
 
   Network _nw() {
-    return Network('http://127.0.0.1:2000', _token);
+    return Network(baseUrl, _token);
   }
 
   @override
@@ -22,11 +25,29 @@ class NetworkDatabase extends Database {
   @override
   FutureOr<User?> login(String name, String password) async {
     var res =
-        await _nw().postData('/login', {'name': name, 'password': password});
-
+        await _nw().postData('login', {'name': name, 'password': password});
     if (res.success) {
       _token = res.data['token'];
-      return null;
+      var user = User.fromJson(res.data['user']);
+      return user;
+    }
+    return null;
+  }
+
+  @override
+  Future<bool> saveUserSettings(
+      User user, String type, Map<String, dynamic> data) async {
+    var res =
+        await _nw().postData('user/setting', {'type': type, 'data': data});
+
+    return res.success;
+  }
+
+  @override
+  Future<User?> check(User user) async {
+    var res = await _nw().postData('currentuser', {});
+    if (res.success) {
+      return User.fromJson(res.data['user']);
     }
     return null;
   }
@@ -35,8 +56,12 @@ class NetworkDatabase extends Database {
 abstract class Database {
   static Database? _store;
 
+  Database();
+
+  factory Database.openNetwork() => NetworkDatabase();
+
   //for server
-  static Database openStore() => _store ??= openStore_();
+  static Database openStore() => (_store ??= openStore_())!;
 
 /*  FutureOr<Database> forIsolate(ByteData reference) async {
     var result = _store!.setReference(reference)._(reference);
@@ -61,5 +86,18 @@ abstract class Database {
 
   FutureOr<User?> login(String name, String password) async {
     return null;
+  }
+
+  Future<User?> checkToken(String name, String token) async {
+    return null;
+  }
+
+  Future<User?> check(User user) async {
+    return null;
+  }
+
+  Future<bool> saveUserSettings(
+      User user, String type, Map<String, dynamic> data) async {
+    return false;
   }
 }
