@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:main/src/auth/login_page.dart';
-import 'package:main/src/authentication.dart';
+import 'package:main/src/settings/authentication.dart';
 import 'package:main/src/main/app_page.dart';
 import 'package:main/src/pages/settings_page.dart';
 import 'package:main/src/pages/test_page.dart';

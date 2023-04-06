@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:main/main.dart';
-import 'package:main/src/authentication.dart';
+import 'package:main/src/settings/authentication.dart';
 import 'package:provider/provider.dart';
 
 enum MenuCmd { about, logout }

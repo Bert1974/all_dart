@@ -192,11 +192,11 @@ class NetworkResponse {
             success = response?.data['success'] == true;
           } else {
             //    message = response['message'];
-            success = true;
+            success = false;
           }
           break;
         case 204: // sucess, no content
-          success = true;
+          success = false;
           break;
       }
     }

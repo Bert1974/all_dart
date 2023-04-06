@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:alfred/alfred.dart';
+import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:data/data.dart';
 
 response(String message, dynamic data, bool success) {
@@ -11,9 +12,15 @@ response(String message, dynamic data, bool success) {
   };
 }
 
-responeError(String message) => response(message, null, false);
+responseError(String message) => response(message, null, false);
 responseException(e) => response(e.toString(), null, false);
 responseData(dynamic data) => response("Ok", data, true);
+
+Future<User?> _getUser(Database connection, HttpRequest req) async {
+  var token = req.headers.value('Authorization');
+  print(token);
+  return null;
+}
 
 void startServer(data) async {
   final app = Alfred();
@@ -46,16 +53,53 @@ void startServer(data) async {
       //catched
     }
   });*/
-  app.all('/login', (req, res) async {
+  app.post('/user/setting', (req, res) async {
+    try {
+      User? user = await _getUser(connection, req);
+      final body = (await req.body) as Map<String, dynamic>;
+    } catch (e) {
+      print(e);
+      return responseException(e);
+    }
+  });
+  app.post('/currentuser', (req, res) async {
+    try {
+      User? user = await _getUser(connection, req);
+      final body = (await req.body) as Map<String, dynamic>;
+    } catch (e) {
+      print(e);
+      return responseException(e);
+    }
+  });
+  app.post('/login', (req, res) async {
     try {
       final body = (await req.body) as Map<String, dynamic>;
-      print(body);
       User? user = await connection.login(body['name'], body['password']);
-      print(user != null ? 'found' : 'not found');
       if (user != null) {
+        // Create a json web token
+// Pass the payload to be sent in the form of a map
+        /* final jwt = JWT(
+
+          // Payload
+          {
+            'id': user.id,
+
+            'server': {
+              'id': '3e4fc296',
+              'loc': 'euw-2',
+            }
+
+          },
+
+          issuer: 'https://git/bertbruggeman.nl',
+
+        );
+
+        // Sign it (default with HS256 algorithm)
+        var token = jwt.sign(SecretKey('secret passphrase'),expiresIn: Duration(hours: 2));*/
         return responseData(<String, dynamic>{'token': '123', 'user': user});
       }
-      return responeError("Geen toegang");
+      return responseError("Geen toegang");
     } catch (e) {
       print(e);
       return responseException(e);

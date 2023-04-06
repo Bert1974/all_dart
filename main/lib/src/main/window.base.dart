@@ -1,18 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:main/main.dart';
-import 'package:main/src/settings/settings_controller.dart';
 import 'package:provider/provider.dart';
 
 import 'app.dart';
 
 /// The Widget that configures your application.
 class BaseMyWindow<T extends BaseMyWindow<T>> extends StatefulWidget {
-  const BaseMyWindow({
-    super.key,
-    required this.settingsController,
-  });
-
-  final SettingsController settingsController;
+  const BaseMyWindow({super.key});
 
   @override
   State<T> createState() => BaseMyWindowState<T>();
@@ -23,11 +17,7 @@ class BaseMyWindowState<T extends BaseMyWindow<T>> extends State<T> {
 
   @override
   Widget build(BuildContext context) {
-    return Provider(
-        create: (context) => pageContext,
-        child: MyApp(
-          settingsController: widget.settingsController,
-        ));
+    return Provider(create: (context) => pageContext, child: const MyApp());
   }
 
   askClose(void Function() doExit) {

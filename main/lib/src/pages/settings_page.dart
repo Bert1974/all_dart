@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../settings/settings_controller.dart';
+import 'package:main/src/settings/theme_controller.dart';
 
 /// Displays the various settings that can be customized by the user.
 ///
@@ -11,7 +10,8 @@ class SettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final SettingsController controller = SettingsController.of(context);
+    // final UserSettingsHandler settings = UserSettingsHandler.of(context);
+    final ThemeController themeController = ThemeController.of(context);
     return Padding(
         padding: const EdgeInsets.all(16),
         // Glue the SettingsController to the theme selection DropdownButton.
@@ -20,9 +20,11 @@ class SettingsPage extends StatelessWidget {
         // SettingsController is updated, which rebuilds the MaterialApp.
         child: DropdownButton<ThemeMode>(
           // Read the selected themeMode from the controller
-          value: controller.themeMode,
+          value: themeController.themeMode,
           // Call the updateThemeMode method any time the user selects a theme.
-          onChanged: controller.updateThemeMode,
+          onChanged: (value) async {
+            await themeController.updateThemeMode(value);
+          },
           items: const [
             DropdownMenuItem(
               value: ThemeMode.system,

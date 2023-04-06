@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:data/data.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +35,7 @@ class AuthenticationHandler extends ChangeNotifier
   }
 
   login(BuildContext context, Map<String, dynamic> data) async {
-    var res = await Network(baseUrl, value.token).postData('login', data);
+    var res = await NetworkHandler.of(context).postData('login', data);
     if (res.success) {
       var login =
           LoginState.login(User.fromJson(res.data['user']), res.data['token']);
@@ -47,6 +49,17 @@ class AuthenticationHandler extends ChangeNotifier
     }
   }
 
+  FutureOr<void> refresh(NetworkHandler network) async {
+    var res = await network.postData('currentuser', {});
+    if (res.success) {
+      var login =
+          LoginState.login(User.fromJson(res.data['user']), res.data['token']);
+      _value = login;
+      notifyListeners();
+      //   context.go('/');
+    }
+  }
+
   @override
   LoginState get value => _value;
 
@@ -55,4 +68,17 @@ class AuthenticationHandler extends ChangeNotifier
     _value = login;
     context.go('/login');
   }
+}
+
+class NetworkHandler {
+  final AuthenticationHandler auth;
+  NetworkHandler(this.auth) {
+    //
+  }
+
+  static NetworkHandler of(BuildContext context) =>
+      Provider.of<NetworkHandler>(context, listen: false);
+
+  FutureOr<NetworkResponse> postData(String url, Map<String, dynamic> data) =>
+      Network(baseUrl, auth.value.token).postData(url, data);
 }

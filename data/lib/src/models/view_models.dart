@@ -59,13 +59,14 @@ class Login {
 @JsonSerializable(explicitToJson: true)
 class User {
   int id;
-  final String firstName, infix, lastName;
+  final String name, firstName, infix, lastName;
   final List<String> roles;
   final List<String> permissions;
   final List<UserSettings> userData;
 
   User(
       {this.id = 0,
+      this.name = "",
       this.firstName = "",
       this.infix = "",
       this.lastName = "",

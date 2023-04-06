@@ -4,6 +4,10 @@ class Logins {
   static const String user = "User";
 }
 
+class UserSettingTypes {
+  static const String user = "User";
+}
+
 @Entity()
 class LoginModel {
   @Id()
@@ -33,7 +37,7 @@ class UserSettingsModel {
   @Id()
   int id = 0;
 
-  late String type;
+  late String type; // UserSettingTypes
   late String? data;
 
   UserSettingsModel({this.id = 0, required this.type, this.data});

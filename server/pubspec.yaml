@@ -9,6 +9,7 @@ environment:
 
 dependencies:
   alfred: ^1.1.0+1
+  dart_jsonwebtoken: ^2.7.1
   data:
     path: ../data
   isolate: ^2.1.1

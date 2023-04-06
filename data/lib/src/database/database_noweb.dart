@@ -8,14 +8,20 @@ import 'package:data/src/models/models.dart';
 
 Database openStore_() => ObjectBoxDatabase();
 
-extension ModelExtension on UserModel {
-  User toVM() => User(
+extension UserModelExtension on UserModel {
+  User toVM(LoginModel login) => User(
       id: id,
+      name: login.name,
       firstName: profile.target!.firstName,
       infix: profile.target!.infix,
       lastName: profile.target!.lastName,
       roles: roles.map((r) => r.tag).toList(),
-      permissions: permissions.map((r) => r.tag).toList());
+      permissions: permissions.map((r) => r.tag).toList(),
+      userData: preferences.map((i) => i.toVM()).toList());
+}
+
+extension UserSettingsModelExtension on UserSettingsModel {
+  UserSettings toVM() => UserSettings(type: type, data: data);
 }
 
 class ObjectBoxDatabase extends Database {
@@ -135,7 +141,7 @@ class ObjectBoxDatabase extends Database {
     if (result != null) {
       var q2 = usersBox!.query(UserModel_.login.equals(result.id)).build();
       UserModel user = (await q2.findFirstAsync())!;
-      return user.toVM();
+      return user.toVM(result);
     }
     return null;
   }
