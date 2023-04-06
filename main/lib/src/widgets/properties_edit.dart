@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:main/main.dart';
-import 'package:main/src/forms/property_edit.dart';
+import 'package:main/src/widgets/property_edit.dart';
 
 import 'row_col_layout.dart';
 

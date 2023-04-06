@@ -19,10 +19,6 @@ class LoginState {
     return LoginState._(null);
   }
 
-/*
-  post(String url, Map<String, dynamic> data) =>
-      Network(baseUrl, token).postData(url, data);
-*/
   LoginState updateUser(User user) {
     return LoginState._(user);
   }
@@ -82,9 +78,8 @@ class DBHandler {
   Database? db;
   DBHandler();
 
-  static DBHandler of(BuildContext context) {
-    return Provider.of<DBHandler>(context, listen: false);
-  }
+  static DBHandler of(BuildContext context) =>
+      Provider.of<DBHandler>(context, listen: false);
 
   open(DatabaseTypes type) async {
     Database? db_;

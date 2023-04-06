@@ -1,7 +1,7 @@
 import 'package:data/data.dart';
 import 'package:flutter/material.dart';
 import 'package:main/main.dart';
-import 'package:main/src/forms/properties_edit.dart';
+import 'package:main/src/widgets/properties_edit.dart';
 import 'package:main/src/settings/authentication.dart';
 
 class LoginPage extends StatefulWidget {
@@ -145,6 +145,7 @@ class _LoginPageState extends State<LoginPage> {
       var auth = AuthenticationHandler.of(this.context);
 
       await db.open(_type);
+      // ignore: use_build_context_synchronously
       await auth.login(this.context, Login.fromJson(_login));
 
       setState(() {

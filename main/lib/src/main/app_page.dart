@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:main/main.dart';
 import 'package:main/src/settings/authentication.dart';
+import 'package:main/src/widgets.dart';
 
 enum MenuCmd { about, logout }
 
@@ -34,25 +35,8 @@ class _AppPageState extends State<AppPage> {
             appBar: AppBar(
               title: const Text('Sample Items'),
               leading: Row(children: [
-                if (Navigator.canPop(context))
-                  IconButton(
-                    icon: const Icon(Icons.arrow_back),
-                    onPressed: () async {
-                      /* if (false) {
-                      
-                    } else {*/
-                      if (Navigator.canPop(context)) {
-                        Navigator.pop(context);
-                      } else if (auth.value.user != null) {
-                        await auth.logout(context);
-                      } else {
-                        ;
-                      }
-                      //   }
-                    },
-                  ),
-                PopupMenuButton<MenuCmd?>(
-                    padding: EdgeInsets.zero,
+                AppPopupMenuButton<MenuCmd?>(
+                    icon: const Icon(Icons.menu),
                     onSelected: (value) async {
                       switch (value) {
                         case MenuCmd.logout:
@@ -71,12 +55,29 @@ class _AppPageState extends State<AppPage> {
                             const PopupMenuItem<MenuCmd?>(
                                 value: MenuCmd.logout, child: Text("Log out"))
                         ]),
+                if (Navigator.canPop(context))
+                  AppIconButton(
+                    icon: const Icon(Icons.arrow_back),
+                    onPressed: () async {
+                      /* if (false) {
+                      
+                    } else {*/
+                      if (Navigator.canPop(context)) {
+                        Navigator.pop(context);
+                      } else if (auth.value.user != null) {
+                        await auth.logout(context);
+                      } else {
+                        ;
+                      }
+                      //   }
+                    },
+                  ),
               ]),
               actions: [
-                if (auth.value.user != null)
-                  IconButton(
+                if (auth.value.user != null &&
+                    GoRouter.of(context).location != '/settings')
+                  AppIconButton(
                     icon: const Icon(Icons.settings),
-                    padding: EdgeInsets.zero,
                     onPressed: () {
                       // Navigate to the settings page. If the user leaves and returns
                       // to the app after it has been killed while running in the

@@ -140,19 +140,26 @@ class RowColLayout extends StatelessWidget {
       var widget =
           ((column.data != null) ? lookupfunction?.call(column.data) : null) ??
               _getWidget(column, size, realw);
-      if (widget is List<Widget>) {
-        currentrow.add(SizedBox(
-            width: realw,
-            child: Column(mainAxisSize: MainAxisSize.max, children: widget)));
-      } else if (widget != null) {
-        currentrow.add(SizedBox(
-            width: realw,
-            child: Column(mainAxisSize: MainAxisSize.max, children: [widget])));
+
+      if (widget != null) {
+        if (widget is List<Widget>) {
+          currentrow.add(SizedBox(
+              width: realw,
+              child: Column(mainAxisSize: MainAxisSize.max, children: widget)));
+        } else {
+          currentrow.add(SizedBox(
+              width: realw,
+              child:
+                  Column(mainAxisSize: MainAxisSize.max, children: [widget])));
+        }
       }
       layout.col += colsize;
     }
     if (currentrow != null) {
-      result.add(Row(children: currentrow));
+      result.add(Row(
+        mainAxisSize: MainAxisSize.max,
+        children: currentrow,
+      ));
     }
     return result;
   }
