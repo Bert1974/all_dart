@@ -3,47 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:main/src/widgets.dart';
 
-/*
-class PropertyEdit extends StatefulWidget {
-  final Cell cell;
-  final dynamic initalValue;
-  final void Function(Cell, dynamic)? onChanged;
-  final void Function(Cell, dynamic)? onSubmit;
-  final Function(Cell)? onClicked;
-
-  const PropertyEdit({
-    super.key,
-    required this.cell,
-    this.initalValue,
-    this.onChanged,
-    this.onSubmit,
-    this.onClicked,
-  });
-
-  @override
-  State<PropertyEdit> createState() => PropertyEditState();
-}
-
-class PropertyEditState extends State<PropertyEdit> {
-  final String? helpText = "???";
-
-
-  @override
-  Widget build(BuildContext context) {
-    return PropertyEditImpl(
-        builder: _doBuild,
-        cell: widget.cell,
-        onChanged: widget.onChanged,
-        onSubmit: widget.onSubmit,
-        onClicked: widget.onClicked);
-  }
-
-  @override
-  void initState() {
-    super.initState();
-  }
-}
-*/
 class PropertyEdit extends FormField<dynamic> {
   final Cell cell;
   final dynamic initalValue;
@@ -74,7 +33,6 @@ class PropertyEdit extends FormField<dynamic> {
       case Var2.number:
         return Row(children: [
           Expanded(
-              // ignore: sort_child_properties_last
               child: TextFormField(
             enableInteractiveSelection: widget.onSubmit != null,
             enabled: widget.onSubmit != null,
@@ -97,7 +55,7 @@ class PropertyEdit extends FormField<dynamic> {
                     )
                   : null,
               filled: widget.onSubmit != null,
-              fillColor: Colors.grey.shade100,
+              //  fillColor: Colors.grey.shade100,
               labelText: widget.cell.name,
               hintText: widget.cell.name,
               prefixText: null,
