@@ -33,107 +33,92 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-        /*  title: Text(
-          title,
-          //       style: Theme.of(context).textTheme.title,
-        ),
-        width:
-        actions: [],
-        content:*/
-        child: ScaffoldMessenger(
-            child: Scaffold(
-                body: Builder(
-                    builder: (innerContext) => Column(children: [
-                          if (disabled == 0) ...[
-                            Form(
-                                key: const Key("form1"),
-                                child: Builder(
-                                    builder: (innerContext2) => PropertiesEdit(
-                                        /*  variables: [
+        //  title: const Text('Login'),
+        child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 480),
+            child: Column(children: [
+              const Row(children: [Text("Login")]),
+              if (disabled == 0) ...[
+                Form(
+                    key: const Key("form1"),
+                    child: Builder(
+                        builder: (innerContext2) => PropertiesEdit(
+                            /*  variables: [
                                               Variable("Login", Var2.text),
                                               Variable(
                                                   "Password", Var2.password),
                                             ],*/
-                                        layout: _layout,
-                                        target: _login,
-                                        disabled: disabled > 0,
-                                        onChanged: (cell, value) {
-                                          setState(() {
-                                            cell!.setValue(_login, value);
-                                          });
-                                        },
-                                        onSubmit: (cell, value) async {
-                                          await _submit(innerContext2);
-                                        },
-                                        onClicked: (cell) async {
-                                          await _submit(innerContext2);
-                                        },
-                                        lookupfunction: (n) {
-                                          if (n is String) {
-                                            if (n == "type") {
-                                              if (Database.openStore() ==
-                                                  null) {
-                                                return null;
-                                              }
-                                              return Row(
-                                                mainAxisSize: MainAxisSize.min,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  Flexible(
-                                                      child: ListTile(
-                                                    title: const Text('Local'),
-                                                    leading:
-                                                        Radio<DatabaseTypes>(
-                                                      value:
-                                                          DatabaseTypes.local,
-                                                      groupValue: _type,
-                                                      onChanged: (DatabaseTypes?
-                                                          value) {
-                                                        if (value != null) {
-                                                          setState(() {
-                                                            _type = value;
-                                                          });
-                                                        }
-                                                      },
-                                                    ),
-                                                  )),
-                                                  Flexible(
-                                                      child: ListTile(
-                                                    title:
-                                                        const Text('Network'),
-                                                    leading:
-                                                        Radio<DatabaseTypes>(
-                                                      value:
-                                                          DatabaseTypes.network,
-                                                      groupValue: _type,
-                                                      onChanged: (DatabaseTypes?
-                                                          value) {
-                                                        if (value != null) {
-                                                          setState(() {
-                                                            _type = value;
-                                                          });
-                                                        }
-                                                      },
-                                                    ),
-                                                  )),
-                                                ],
-                                              );
+                            layout: _layout,
+                            target: _login,
+                            disabled: disabled > 0,
+                            onChanged: (cell, value) {
+                              setState(() {
+                                cell!.setValue(_login, value);
+                              });
+                            },
+                            onSubmit: (cell, value) async {
+                              await _submit(innerContext2);
+                            },
+                            onClicked: (cell) async {
+                              await _submit(innerContext2);
+                            },
+                            lookupfunction: (n) {
+                              if (n is String) {
+                                if (n == "type") {
+                                  if (Database.openStore() == null) {
+                                    return null;
+                                  }
+                                  return Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Flexible(
+                                          child: ListTile(
+                                        title: const Text('Local'),
+                                        leading: Radio<DatabaseTypes>(
+                                          value: DatabaseTypes.local,
+                                          groupValue: _type,
+                                          onChanged: (DatabaseTypes? value) {
+                                            if (value != null) {
+                                              setState(() {
+                                                _type = value;
+                                              });
                                             }
-                                            /*  return _login!.lookup((f) {
+                                          },
+                                        ),
+                                      )),
+                                      Flexible(
+                                          child: ListTile(
+                                        title: const Text('Network'),
+                                        leading: Radio<DatabaseTypes>(
+                                          value: DatabaseTypes.network,
+                                          groupValue: _type,
+                                          onChanged: (DatabaseTypes? value) {
+                                            if (value != null) {
+                                              setState(() {
+                                                _type = value;
+                                              });
+                                            }
+                                          },
+                                        ),
+                                      )),
+                                    ],
+                                  );
+                                }
+                                /*  return _login!.lookup((f) {
                                                     setState(() {
                                                       f();
                                                     });
                                                   }, n);*/
-                                          }
-                                          return null;
-                                        }))),
-                            const Text(
-                              "HELLO!",
-                              //     style: Theme.of(context).textTheme.body1,
-                            )
-                          ]
-                        ])))));
+                              }
+                              return null;
+                            }))),
+                const Text(
+                  "HELLO!",
+                  //     style: Theme.of(context).textTheme.body1,
+                )
+              ]
+            ])));
   }
 
   _submit(BuildContext context) async {
