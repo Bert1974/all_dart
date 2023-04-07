@@ -5,8 +5,9 @@ import 'package:main/src/settings/authentication.dart';
 import 'package:main/src/main/app_page.dart';
 import 'package:main/src/pages/settings_page.dart';
 import 'package:main/src/pages/test_page.dart';
+import 'package:main/src/widgets.dart';
 
-MaterialPage<void> createPage<T extends Widget>(
+MaterialPage<void> createPage<T extends AppPageWidget>(
     BuildContext context, GoRouterState state, T child) {
   return MaterialPage<void>(
     key: state.pageKey,

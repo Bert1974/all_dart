@@ -1,14 +1,16 @@
 import 'package:data/data.dart';
 import 'package:flutter/material.dart';
-import 'package:main/main.dart';
-import 'package:main/src/widgets/properties_edit.dart';
+import 'package:main/src/widgets.dart';
 import 'package:main/src/settings/authentication.dart';
 
-class LoginPage extends StatefulWidget {
+class LoginPage extends AppPageStatefulWidget<LoginPage> {
   const LoginPage({super.key});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
+
+  @override
+  Widget get title => const Text("Login");
 }
 
 class _LoginPageState extends State<LoginPage> {

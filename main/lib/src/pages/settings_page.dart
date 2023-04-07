@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:main/src/settings/theme_controller.dart';
+import 'package:main/src/widgets.dart';
 
 /// Displays the various settings that can be customized by the user.
 ///
 /// When a user changes a setting, the SettingsController is updated and
 /// Widgets that listen to the SettingsController are rebuilt.
-class SettingsPage extends StatelessWidget {
+class SettingsPage extends AppPageStatelessWidget {
   const SettingsPage({super.key});
+
+  @override
+  Widget get title => const Text("Preferences");
 
   @override
   Widget build(BuildContext context) {

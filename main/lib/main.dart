@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:main/src/main/app_page.dart';
 import 'package:provider/provider.dart';
 
 export 'main.stub.dart'
@@ -6,77 +7,28 @@ export 'main.stub.dart'
     if (dart.library.js) 'main.web.dart';
 
 class PageContext {
-  BuildContext? context;
+  final List<AppPageState> _pages = [];
 
-  static PageContext of(BuildContext context) =>
-      Provider.of<PageContext>(context, listen: false);
-}
+  static PageContext? of(BuildContext context) =>
+      Provider.of<PageContext?>(context, listen: false);
 
-class R {
-  final List<C> columns;
-  const R(this.columns);
-}
-
-class C {
-  final Map<String, int>? sizes;
-  final Map<String, int>? offsets;
-  final dynamic data;
-  C(this.sizes, {this.data, this.offsets}) {
-    if (sizes == null && offsets == null) {
-      throw Exception('empty column');
+  void register(AppPageState state) {
+    if (!_pages.contains(state)) {
+      _pages.add(state);
     }
   }
-}
 
-class Cell {
-  final Var2? type;
-  final String? name;
-  final String? varName;
-  final dynamic Function(dynamic)? getter;
-  final dynamic Function(dynamic, dynamic)? setter;
-
-  Cell(this.type, this.name, {this.varName, this.getter, this.setter});
-  getValue(target) {
-    if (target is Map<String, dynamic>) {
-      return target[varName];
-    } else if (getter != null) {
-      switch (type) {
-        case Var2.ip:
-        case Var2.text:
-        case Var2.password:
-          return getter!(target);
-
-        case Var2.number:
-          return getter!(target)?.toString();
-
-        default:
-          throw UnsupportedError('Not implemented');
-      }
-    }
-    return null;
-  }
-
-  setValue(target, value) {
-    if (target is Map<String, dynamic>) {
-      target[varName!] = value;
-    } else {
-      if (setter != null) {
-        switch (type) {
-          case Var2.ip:
-          case Var2.text:
-          case Var2.password:
-            setter!(target, value);
-            break;
-          case Var2.number:
-            setter!(target, value != null ? int.parse(value as String) : null);
-            break;
-
-          default:
-            throw UnsupportedError('Not implemented');
-        }
-      }
+  void unregister(AppPageState state) {
+    if (_pages.contains(state)) {
+      _pages.remove(state);
     }
   }
-}
 
-enum Var2 { text, number, checkbox, password, ip, button }
+  BuildContext? get context {
+    return _pages
+        // ignore: unnecessary_cast
+        .map((e) => e as AppPageState?)
+        .firstWhere((element) => element!.mounted, orElse: () => null)
+        ?.context;
+  }
+}

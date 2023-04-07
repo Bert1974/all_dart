@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:main/main.dart';
+import 'package:main/src/widgets.dart';
 
 /*
 class PropertyEdit extends StatefulWidget {

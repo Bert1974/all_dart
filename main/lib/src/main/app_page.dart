@@ -7,19 +7,19 @@ import 'package:main/src/widgets.dart';
 enum MenuCmd { about, logout }
 
 class AppPage extends StatefulWidget {
-  final Widget child;
+  final AppPageWidget child;
 
   const AppPage({super.key, required this.child});
 
   @override
-  State<AppPage> createState() => _AppPageState();
+  State<AppPage> createState() => AppPageState();
 }
 
-class _AppPageState extends State<AppPage> {
+class AppPageState extends State<AppPage> {
   @override
   void initState() {
     super.initState();
-    PageContext.of(context).context = context;
+    PageContext.of(context)?.register(this);
   }
 
   @override
@@ -28,12 +28,24 @@ class _AppPageState extends State<AppPage> {
   }
 
   @override
+  void deactivate() {
+    PageContext.of(context)?.unregister(this);
+    super.deactivate();
+  }
+
+  @override
+  void activate() {
+    super.activate();
+    PageContext.of(context)?.register(this);
+  }
+
+  @override
   Widget build(BuildContext context) {
     var auth = AuthenticationHandler.of(context);
     return ScaffoldMessenger(
         child: Scaffold(
             appBar: AppBar(
-              title: const Text('Sample Items'),
+              title: widget.child.title,
               leading: Row(children: [
                 AppPopupMenuButton<MenuCmd?>(
                     icon: const Icon(Icons.menu),
@@ -94,6 +106,6 @@ class _AppPageState extends State<AppPage> {
             // In contrast to the default ListView constructor, which requires
             // building all Widgets up front, the ListView.builder constructor lazily
             // builds Widgets as they’re scrolled into view.
-            body: widget.child));
+            body: widget.child as Widget));
   }
 }

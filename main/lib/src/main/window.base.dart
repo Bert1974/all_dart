@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:main/main.dart';
-import 'package:provider/provider.dart';
 
 import 'app.dart';
 
@@ -13,39 +11,6 @@ class BaseMyWindow<T extends BaseMyWindow<T>> extends StatefulWidget {
 }
 
 class BaseMyWindowState<T extends BaseMyWindow<T>> extends State<T> {
-  final pageContext = PageContext();
-
   @override
-  Widget build(BuildContext context) {
-    return Provider(
-        create: (context) => pageContext, lazy: true, child: const MyApp());
-  }
-
-  askClose(void Function() doExit) {
-    // ignore: use_build_context_synchronously
-    showDialog(
-      context: pageContext.context!,
-      builder: (_) {
-        return AlertDialog(
-          title: const Text('Are you sure you want to close this window?'),
-          actions: [
-            TextButton(
-              child: const Text('No'),
-              onPressed: () {
-                Navigator.of(pageContext.context!).pop();
-              },
-            ),
-            TextButton(
-              child: const Text('Yes'),
-              onPressed: () {
-                doExit();
-                // Navigator.pop(_pageContext.context!);
-                //    /*await*/ windowManager.destroy();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
+  Widget build(BuildContext context) => const MyApp();
 }

@@ -188,6 +188,7 @@ class ObjectBoxDatabase extends Database {
       User user, String type, Map<String, dynamic> data) async {
     UserModel user2 = usersBox!.get(user.id)!;
     UserSettingsModel? data_ = user2.preferences
+        // ignore: unnecessary_cast
         .map((e) => e as UserSettingsModel?)
         .firstWhere((element) => element!.type == type, orElse: () => null);
     if (data_ == null) {
