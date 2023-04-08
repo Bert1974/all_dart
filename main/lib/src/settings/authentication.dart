@@ -87,17 +87,17 @@ class DBHandler {
     switch (type) {
       case DatabaseTypes.local:
         db_ = Database.openStore(options['database']);
-        if (db_ == null) {
-          return;
-        }
-        db?.dispose();
-        db = null;
-        await db_.open();
         break;
       case DatabaseTypes.network:
         db_ = Database.openNetwork(options['server']);
         break;
     }
+    if (db_ == null) {
+      return;
+    }
+    db?.dispose();
+    db = null;
+    await db_.open();
     db = db_;
     // User? user = await db_.login(login.name, login.password);
   }

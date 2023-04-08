@@ -97,7 +97,7 @@ class _LoginPageState extends State<LoginPage> {
         //  title: const Text('Login'),
         child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 360),
-            child: Column(children: [
+            child: Column(mainAxisSize: MainAxisSize.min, children: [
               const Row(children: [Text("Login")]),
               if (disabled == 0) ...[
                 Form(
@@ -134,10 +134,6 @@ class _LoginPageState extends State<LoginPage> {
                               }
                               return null;
                             }))),
-                const Text(
-                  "HELLO!",
-                  //     style: Theme.of(context).textTheme.body1,
-                )
               ]
             ])));
   }
