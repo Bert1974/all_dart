@@ -93,12 +93,15 @@ class DBHandler {
         break;
     }
     if (db_ == null) {
-      return;
+      return false;
     }
     db?.dispose();
     db = null;
-    await db_.open();
+    if (!(await db_.open())) {
+      return false;
+    }
     db = db_;
+    return true;
     // User? user = await db_.login(login.name, login.password);
   }
 }

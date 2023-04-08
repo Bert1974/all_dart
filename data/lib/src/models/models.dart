@@ -89,7 +89,7 @@ class PermissionModel {
 
   PermissionModel(this.name, this.tag);
 }
-
+/*
 @Entity()
 class ItemModel {
   @Id()
@@ -130,7 +130,7 @@ class LaunchRDPModel extends BaseItem implements BaseLaunchItem {
 
   LaunchRDPModel([this.server = ""]);
 }
-
+*/
 /*
         @Index // Improves query performance at the cost of storage space.
         var date: Date? = null*/

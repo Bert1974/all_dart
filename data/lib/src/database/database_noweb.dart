@@ -55,11 +55,17 @@ class ObjectBoxDatabase extends Database {
   }
 
   @override
-  FutureOr<void> open() async {
-    storeInstance = openStore(directory: databaseFile);
-    store = storeInstance;
-    _init();
-    seed();
+  FutureOr<bool> open() async {
+    try {
+      storeInstance = openStore(directory: databaseFile);
+      store = storeInstance;
+      _init();
+      seed();
+      return true;
+    } catch (e) {
+      //
+    } finally {}
+    return false;
   }
 
   @override

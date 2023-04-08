@@ -18,6 +18,8 @@ class LoginPage extends AppPageStatefulWidget<LoginPage> {
 class _LoginPageState extends State<LoginPage> {
   int disabled = 0;
 
+  bool get isDisbled => disabled > 0;
+
   var _login = Login().toJson();
   var _storage = <String, dynamic>{};
 
@@ -58,7 +60,7 @@ class _LoginPageState extends State<LoginPage> {
           leading: Radio<int>(
               value: DatabaseTypes.local.index,
               groupValue: _storage['type'],
-              onChanged: (int? value) => _setType(value)),
+              onChanged: isDisbled ? null : (int? value) => _setType(value)),
         )),
         Flexible(
             child: ListTile(
@@ -66,7 +68,7 @@ class _LoginPageState extends State<LoginPage> {
           leading: Radio<int>(
               value: DatabaseTypes.network.index,
               groupValue: _storage['type'],
-              onChanged: (int? value) => _setType(value)),
+              onChanged: isDisbled ? null : (int? value) => _setType(value)),
         )),
       ],
     );
@@ -78,7 +80,7 @@ class _LoginPageState extends State<LoginPage> {
         if (value == DatabaseTypes.local.index) {
           _storage = {
             'type': value,
-            'database': p.join(documentsDirectory, 'data.mdb')
+            'database': p.join(documentsDirectory, 'all_dart.mdb')
           };
         } else if (value == DatabaseTypes.network.index) {
           _storage = {'type': value, 'server': 'http://127.0.0.1:2222'};
@@ -104,7 +106,7 @@ class _LoginPageState extends State<LoginPage> {
             constraints: const BoxConstraints(maxWidth: 360),
             child: Column(mainAxisSize: MainAxisSize.min, children: [
               const Row(children: [Text("Login")]),
-              if (disabled == 0) ...[
+              /*  if (disabled == 0)*/ ...[
                 Form(
                     key: const Key("form1"),
                     child: Builder(
@@ -116,7 +118,7 @@ class _LoginPageState extends State<LoginPage> {
                                             ],*/
                             layout: _layout,
                             target: _login,
-                            disabled: disabled > 0,
+                            disabled: isDisbled,
                             onChanged: (cell, value) {
                               setState(() {
                                 cell!.setValue(_login, value);
@@ -155,11 +157,21 @@ class _LoginPageState extends State<LoginPage> {
 
       var dbtype = DatabaseTypes.values[_storage['type'] as int];
 
-      await db.open(dbtype, _storage);
+      if (await db.open(dbtype, _storage)) {
+        // ignore: use_build_context_synchronously
+        User? user = await auth.login(this.context, Login.fromJson(_login));
 
-      // ignore: use_build_context_synchronously
-      await auth.login(this.context, Login.fromJson(_login));
-
+        if (user == null) {
+          // ignore: use_build_context_synchronously
+          showSnackError(context, 'Fout met inloggen');
+        } else {
+          // ignore: use_build_context_synchronously
+          showSnackBar(context, 'inloggen');
+        }
+      } else {
+        // ignore: use_build_context_synchronously
+        showSnackError(context, 'Fout met openen');
+      }
       setState(() {
         disabled--;
       });

@@ -32,7 +32,9 @@ class NetworkDatabase extends Database {
   }
 
   @override
-  FutureOr<void> open() async {}
+  FutureOr<bool> open() async {
+    return true;
+  }
 
   @override
   FutureOr<User?> login(String name, String password) async {
@@ -97,8 +99,8 @@ abstract class Database {
     throw UnsupportedError('wrong usage');
   }
 
-  FutureOr<void> open() async {
-    return null;
+  FutureOr<bool> open() async {
+    return false;
   }
 
   FutureOr<User?> login(String name, String password) async {

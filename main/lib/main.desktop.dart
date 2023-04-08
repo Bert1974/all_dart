@@ -23,6 +23,10 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   _docdir = (await getApplicationDocumentsDirectory()).path;
+/*
+  if ( Platform.isWindows){
+    _docdir=Platform.user
+  }*/
 
   if (!(Platform.isLinux || Platform.isWindows || Platform.isMacOS)) {
     runApp(const window_other.MyWindow());
