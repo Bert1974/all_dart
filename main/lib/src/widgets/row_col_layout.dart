@@ -24,57 +24,82 @@ class Cell {
   final dynamic Function(dynamic)? getter;
   final dynamic Function(dynamic, dynamic)? setter;
 
+  bool required = false;
+
   Cell(this.type, this.name, {this.varName, this.getter, this.setter});
-  getValue(target) {
+  dynamic getValue(target) {
     dynamic result;
     if (getter != null) {
-      switch (type) {
-        case Var2.ip:
-        case Var2.text:
-        case Var2.password:
-          result = getter!(target);
-          break;
-
-        case Var2.number:
-          result = getter!(target)?.toString();
-          break;
-
-        default:
-          throw UnsupportedError('Not implemented');
-      }
+      result = getter!(target);
     } else if (target is Map<String, dynamic>) {
       result = target[varName];
     } else {
       throw UnsupportedError('Not implemented');
     }
-    return result;
-  }
-
-  setValue(target, value) {
-    if (setter != null) {
+    if (result != null) {
       switch (type) {
-        case Var2.ip:
+        case Var2.url:
         case Var2.text:
+        case Var2.email:
+        case Var2.phone:
+        case Var2.file:
+        case Var2.directory:
         case Var2.password:
-          setter!(target, value);
-          break;
-        case Var2.number:
-          setter!(target, value != null ? int.parse(value as String) : null);
           break;
 
+        case Var2.number:
+          result = result.toString();
+          break;
+
+        case Var2.datetime:
         default:
           throw UnsupportedError('Not implemented');
       }
-      return;
+    }
+    return result;
+  }
+
+  void setValue(dynamic target, dynamic value) {
+    switch (type) {
+      case Var2.url:
+      case Var2.text:
+      case Var2.email:
+      case Var2.phone:
+      case Var2.directory:
+      case Var2.file:
+      case Var2.password:
+        break;
+      case Var2.number:
+        value = value != null ? int.parse(value as String) : null;
+        break;
+
+      case Var2.datetime:
+      default:
+        throw UnsupportedError('Not implemented');
+    }
+    if (setter != null) {
+      setter!(target, value);
     } else if (target is Map<String, dynamic>) {
       target[varName!] = value;
-      return;
+    } else {
+      throw UnsupportedError('Not implemented');
     }
-    throw UnsupportedError('Not implemented');
   }
 }
 
-enum Var2 { text, number, checkbox, password, ip, button }
+enum Var2 {
+  text,
+  number,
+  checkbox,
+  password,
+  url,
+  directory,
+  file,
+  phone,
+  email,
+  datetime,
+  button
+}
 
 Map<String, double?> _csToSize = {
   'xs': null,

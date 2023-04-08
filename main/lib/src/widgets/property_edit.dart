@@ -1,12 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:main/src/widgets.dart';
 
 class PropertyEdit extends FormField<dynamic> {
   final Cell cell;
-  final ValueChanged<String>? onChanged;
-  final ValueChanged<String>? onFieldSubmitted;
+  final ValueChanged<String>? onSubmitted;
   final FutureOr<void> Function(Cell)? onClicked;
   final String? helpText;
 
@@ -18,9 +18,9 @@ class PropertyEdit extends FormField<dynamic> {
     super.autovalidateMode,
     super.validator,
     super.onSaved,
-    this.onChanged,
-    this.onFieldSubmitted,
+    this.onSubmitted,
     this.onClicked,
+    super.enabled,
     this.helpText,
   });
 
@@ -33,15 +33,19 @@ class PropertyEdit extends FormField<dynamic> {
 
     switch (widget.cell.type!) {
       case Var2.text:
+      case Var2.email:
+      case Var2.phone:
+      case Var2.file:
+      case Var2.directory:
       case Var2.password:
-      case Var2.ip:
+      case Var2.url:
       case Var2.number:
         return Column(children: [
           Row(children: [
             Expanded(
                 child: TextField(
-              enableInteractiveSelection: widget.onFieldSubmitted != null,
-              enabled: widget.onFieldSubmitted != null,
+              enableInteractiveSelection: widget.enabled,
+              enabled: widget.enabled,
               decoration: InputDecoration(
                 suffixIcon: widget.helpText != null
                     ? Material(
@@ -60,31 +64,43 @@ class PropertyEdit extends FormField<dynamic> {
                         ),
                       )
                     : null,
-                filled: widget.onFieldSubmitted != null,
+                filled: widget.enabled,
                 //  fillColor: Colors.grey.shade100,
                 labelText: widget.cell.name,
                 hintText: widget.cell.name,
                 prefixText: null,
               ),
               obscureText: widget.cell.type == Var2.password,
-              //      autovalidateMode: AutovalidateMode.onUserInteraction,
               controller: state._controller,
-              //     initialValue: widget.initialValue ?? '!',
-              onSubmitted: (widget.onFieldSubmitted == null)
+              onSubmitted: (widget.onSubmitted == null)
                   ? null
                   : (value) {
-                      widget.onFieldSubmitted?.call(value);
+                      widget.onSubmitted?.call(value);
                     },
               onChanged: (value) {
                 state.didChange(state._controller.text);
-                //  widget.onChanged?.call(value);
               },
               //     validator: null, // (v) => v == null || v == "" ? "needed" : null,
-              keyboardType: /* TextInputType.phone : */ null,
-              inputFormatters: // FilteringTextInputFormatter.digitsOnly,
-                  null,
+              keyboardType: widget.cell.type == Var2.number
+                  ? const TextInputType.numberWithOptions(
+                      decimal: false, signed: false)
+                  : widget.cell.type == Var2.url
+                      ? TextInputType.url
+                      : widget.cell.type == Var2.email
+                          ? TextInputType.emailAddress
+                          : widget.cell.type == Var2.phone
+                              ? TextInputType.phone
+                              : widget.cell.type == Var2.datetime
+                                  ? TextInputType.datetime
+                                  : null,
+              inputFormatters: [
+                if (widget.cell.type == Var2.number)
+                  FilteringTextInputFormatter.digitsOnly
+              ],
               maxLength: null,
-            ))
+            )),
+            if (widget.cell.type == Var2.directory) const SizedBox(width: 20),
+            if (widget.cell.type == Var2.file) const SizedBox(width: 20),
           ]),
           if (state.hasError)
             Text(
@@ -104,6 +120,8 @@ class PropertyEdit extends FormField<dynamic> {
           },
           child: Text(widget.cell.name!),
         );
+      case Var2.datetime:
+        throw UnsupportedError('Not implemented');
     }
   }
 }
@@ -127,11 +145,15 @@ class _PropertyEditImplState extends FormFieldState<dynamic> {
   Widget build(BuildContext context) {
     switch (_widget.cell.type!) {
       case Var2.text:
+      case Var2.email:
+      case Var2.phone:
       case Var2.password:
-      case Var2.ip:
+      case Var2.url:
       case Var2.number:
         _controller.value = _controller.value.copyWith(text: super.value ?? '');
         break;
+      case Var2.datetime:
+        throw UnsupportedError('Not implemented');
       default:
         break;
     }
@@ -142,22 +164,22 @@ class _PropertyEditImplState extends FormFieldState<dynamic> {
   void reset() {
     super.reset();
     _controller.value = _controller.value.copyWith(text: super.value ?? '');
-    _widget.onChanged?.call(value);
+    // _widget.onSaved?.call(value);
   }
 
   @override
   void didChange(dynamic value) {
     super.didChange(value);
-    _widget.onChanged?.call(value);
+    save();
+    //_widget.onSaved?.call(value);
   }
-
+/*
   @protected
   @override
   // ignore: use_setters_to_change_properties, (API predates enforcing the lint)
   void setValue(dynamic value) {
     super.setValue(value);
-    _controller.value = _controller.value.copyWith(text: super.value ?? '');
-  }
+  }*/
 
   @mustCallSuper
   @protected
@@ -165,5 +187,6 @@ class _PropertyEditImplState extends FormFieldState<dynamic> {
   void didUpdateWidget(covariant dynamic oldWidget) {
     super.didUpdateWidget(oldWidget);
     super.setValue(_widget.initialValue);
+    _controller.value = _controller.value.copyWith(text: super.value ?? '');
   }
 }

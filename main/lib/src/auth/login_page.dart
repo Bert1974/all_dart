@@ -29,19 +29,22 @@ class _LoginPageState extends State<LoginPage> {
               offsets: {'xl': 4, 'md': 0}, data: _createTypeWidgets),
           if (_storage['type'] == DatabaseTypes.local.index) ...[
             C({'xs': 12},
-                data: Cell(Var2.text, 'Database directory',
+                data: Cell(Var2.directory, 'Database directory',
                     getter: (value) => _storage['database'],
                     setter: (target, value) => _storage['database'] = value)),
           ],
           if (_storage['type'] == DatabaseTypes.network.index) ...[
             C({'xs': 12},
-                data: Cell(Var2.text, 'Server',
+                data: Cell(Var2.url, 'Server',
                     getter: (value) => _storage['server'],
-                    setter: (target, value) => _storage['server'] = value)),
+                    setter: (target, value) => _storage['server'] = value)
+                  ..required = true),
           ],
-          C({'xs': 12}, data: Cell(Var2.text, 'Login', varName: 'name')),
           C({'xs': 12},
-              data: Cell(Var2.password, 'Password', varName: 'password')),
+              data: Cell(Var2.text, 'Login', varName: 'name')..required = true),
+          C({'xs': 12},
+              data: Cell(Var2.password, 'Password', varName: 'password')
+                ..required = true),
           C({'xs': 6}, offsets: {'xs': 3}, data: Cell(Var2.button, "Connect")),
         ])
       ];
@@ -119,6 +122,8 @@ class _LoginPageState extends State<LoginPage> {
                             layout: _layout,
                             target: _login,
                             disabled: isDisbled,
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
                             onChanged: (cell, value) {
                               setState(() {
                                 cell!.setValue(_login, value);

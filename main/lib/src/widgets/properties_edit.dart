@@ -14,6 +14,7 @@ class PropertiesEdit extends StatefulWidget {
   final FutureOr<void> Function(Cell? v, dynamic value)? onSubmit;
   final FutureOr<void> Function(Cell? v)? onClicked;
   final dynamic target;
+  final AutovalidateMode autovalidateMode;
 
   const PropertiesEdit(
       {super.key,
@@ -23,7 +24,8 @@ class PropertiesEdit extends StatefulWidget {
       this.lookupfunction,
       this.onChanged,
       this.onSubmit,
-      this.onClicked});
+      this.onClicked,
+      this.autovalidateMode = AutovalidateMode.disabled});
 
   @override
   State<PropertiesEdit> createState() => _PropertiesEditState();
@@ -43,19 +45,26 @@ class _PropertiesEditState extends State<PropertiesEdit> {
     //   children: variables.map<Widget>((p) => createPropertyEdit(p)).toList());
   }
 
-  String? Function(dynamic)? _getValidator(Cell cell) {
-    switch (cell.type!) {
-      case Var2.text:
-      case Var2.password:
-      case Var2.ip:
-      case Var2.number:
-        return (value_) =>
-            value_ != null && value_.length > 0 ? null : 'required';
-
-      case Var2.checkbox:
-      case Var2.button:
-        return null;
+  String? Function(dynamic)? add(
+      String? Function(dynamic)? result, String? Function(dynamic) newfunc) {
+    if (result != null) {
+      return (value) => result(value) ?? newfunc(value);
+    } else {
+      return newfunc;
     }
+  }
+
+  String? Function(dynamic)? _getValidator(Cell cell) {
+    String? Function(dynamic)? result;
+
+    if (cell.required) {
+      result = add(
+          result,
+          (value_) => value_ != null && value_.toString().isNotEmpty
+              ? null
+              : 'Dit veld is verplicht');
+    }
+    return result;
   }
 
   Widget? _lookupfunction(dynamic value) {
@@ -63,11 +72,13 @@ class _PropertiesEditState extends State<PropertiesEdit> {
       return PropertyEdit(
           cell: value,
           initialValue: value.getValue(widget.target),
+          autovalidateMode: widget.autovalidateMode,
+          enabled: !widget.disabled,
           onClicked: widget.onClicked,
-          onFieldSubmitted: !widget.disabled && widget.onSubmit != null
+          onSubmitted: !widget.disabled && widget.onSubmit != null
               ? (value_) => widget.onSubmit?.call(value, value_)
               : null,
-          onChanged: widget.onChanged != null
+          onSaved: widget.onChanged != null
               ? (value_) => widget.onChanged?.call(value, value_)
               : null,
           validator: _getValidator(value));
