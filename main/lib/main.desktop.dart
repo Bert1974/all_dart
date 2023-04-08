@@ -1,6 +1,13 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:main/src/main/window.desktop.dart';
+import 'package:main/src/main/window.desktop.dart' as window_dekstop;
+import 'package:main/src/main/window.other.dart' as window_other;
+import 'package:path_provider/path_provider.dart';
 import 'package:window_manager/window_manager.dart';
+
+late String _docdir;
+String get documentsDirectory => _docdir;
 
 void main() async {
   // Set up the SettingsController, which will glue user settings to multiple
@@ -14,6 +21,14 @@ void main() async {
   //await settingsController.loadSettings();
 
   WidgetsFlutterBinding.ensureInitialized();
+
+  _docdir = (await getApplicationDocumentsDirectory()).path;
+
+  if (!(Platform.isLinux || Platform.isWindows || Platform.isMacOS)) {
+    runApp(const window_other.MyWindow());
+    return;
+  }
+
   // Must add this line.
   await windowManager.ensureInitialized();
 
@@ -31,5 +46,6 @@ void main() async {
   // Run the app and pass in the SettingsController. The app listens to the
   // SettingsController for changes, then passes it further down to the
   // SettingsView.
-  runApp(const MyWindow());
+
+  runApp(const window_dekstop.MyWindow());
 }

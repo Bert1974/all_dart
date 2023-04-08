@@ -1,7 +1,9 @@
 import 'package:data/data.dart';
 import 'package:flutter/material.dart';
+import 'package:main/main.dart';
 import 'package:main/src/settings/authentication.dart';
 import 'package:main/src/widgets.dart';
+import 'package:path/path.dart' as p;
 
 class LoginPage extends AppPageStatefulWidget<LoginPage> {
   const LoginPage({super.key});
@@ -74,7 +76,10 @@ class _LoginPageState extends State<LoginPage> {
     if (value != null && _storage['type'] != value) {
       setState(() {
         if (value == DatabaseTypes.local.index) {
-          _storage = {'type': value, 'database': 'data.mdb'};
+          _storage = {
+            'type': value,
+            'database': p.join(documentsDirectory, 'data.mdb')
+          };
         } else if (value == DatabaseTypes.network.index) {
           _storage = {'type': value, 'server': 'http://127.0.0.1:2222'};
         }
