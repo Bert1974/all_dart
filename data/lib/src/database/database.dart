@@ -14,7 +14,6 @@ enum DatabaseTypes { local, network }
 class NetworkDatabase extends Database {
   String? _token;
   late final String baseUrl;
-  //var baseUrl = 'http://127.0.0.1:2222/';
 
   NetworkDatabase(String baseUrl) {
     if (!baseUrl.endsWith('/')) {

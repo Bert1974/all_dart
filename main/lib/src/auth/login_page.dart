@@ -29,7 +29,7 @@ class _LoginPageState extends State<LoginPage> {
               offsets: {'xl': 4, 'md': 0}, data: _createTypeWidgets),
           if (_storage['type'] == DatabaseTypes.local.index) ...[
             C({'xs': 12},
-                data: Cell(Var2.text, 'Database',
+                data: Cell(Var2.text, 'Database directory',
                     getter: (value) => _storage['database'],
                     setter: (target, value) => _storage['database'] = value)),
           ],
@@ -80,10 +80,10 @@ class _LoginPageState extends State<LoginPage> {
         if (value == DatabaseTypes.local.index) {
           _storage = {
             'type': value,
-            'database': p.join(documentsDirectory, 'all_dart.mdb')
+            'database': p.join(documentsDirectory, 'database')
           };
         } else if (value == DatabaseTypes.network.index) {
-          _storage = {'type': value, 'server': 'http://127.0.0.1:2222'};
+          _storage = {'type': value, 'server': 'http://192.168.178.15:2222'};
         }
       });
     }

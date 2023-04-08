@@ -7,8 +7,8 @@ import 'package:data/objectbox.g.dart';
 
 import 'package:data/src/models/models.dart';
 
-Database? openStore_(String? databaseFile) =>
-    ObjectBoxDatabase(databaseFile ?? '');
+Database? openStore_(String? databaseDirectory) =>
+    ObjectBoxDatabase(databaseDirectory ?? '');
 
 extension UserModelExtension on UserModel {
   User toVM(LoginModel login) => User(
@@ -27,7 +27,7 @@ extension UserSettingsModelExtension on UserSettingsModel {
 }
 
 class ObjectBoxDatabase extends Database {
-  final String databaseFile;
+  final String databaseDirectory;
   static Store? storeInstance;
   Store? store;
   Box<UserModel>? usersBox;
@@ -36,7 +36,7 @@ class ObjectBoxDatabase extends Database {
   Box<RoleModel>? rolesBox;
   Box<PermissionModel>? permissionBox;
 
-  ObjectBoxDatabase(this.databaseFile);
+  ObjectBoxDatabase(this.databaseDirectory);
 
   Future<void> close() async {
     store?.close();
@@ -57,7 +57,7 @@ class ObjectBoxDatabase extends Database {
   @override
   FutureOr<bool> open() async {
     try {
-      storeInstance = openStore(directory: databaseFile);
+      storeInstance = openStore(directory: databaseDirectory);
       store = storeInstance;
       _init();
       seed();
