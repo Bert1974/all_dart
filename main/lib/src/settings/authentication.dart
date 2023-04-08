@@ -81,12 +81,12 @@ class DBHandler {
   static DBHandler of(BuildContext context) =>
       Provider.of<DBHandler>(context, listen: false);
 
-  open(DatabaseTypes type) async {
+  open(DatabaseTypes type, Map<String, dynamic> options) async {
     Database? db_;
 
     switch (type) {
       case DatabaseTypes.local:
-        db_ = Database.openStore();
+        db_ = Database.openStore(options['database']);
         if (db_ == null) {
           return;
         }
@@ -95,7 +95,7 @@ class DBHandler {
         await db_.open();
         break;
       case DatabaseTypes.network:
-        db_ = Database.openNetwork();
+        db_ = Database.openNetwork(options['server']);
         break;
     }
     db = db_;

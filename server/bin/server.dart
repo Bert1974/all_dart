@@ -9,7 +9,7 @@ const int _totalThtreads = 4;
 void main(List<String> arguments) async {
   var completer = Completer();
   //final receivePort = ReceivePort();
-  final Database connection = Database.openStore()!;
+  final Database connection = Database.openStore(server.databaseFile)!;
   await connection.open();
   var reference = connection.getReference();
 

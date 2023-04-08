@@ -5,6 +5,7 @@ import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:data/data.dart';
 
 const secretPassphrase = '123secretjwt';
+const String databaseFile = "server.mdb";
 
 response(String message, dynamic data, bool success) {
   return <String, dynamic>{
@@ -61,7 +62,7 @@ void startServer(data) async {
   // final connection = Connection.forServer();
 //  final userBox = connection.box<User>();
 
-  final Database connection = Database.openStore()!;
+  final Database connection = Database.openStore(databaseFile)!;
   connection.setReference(reference);
 
   app.all('*', cors(/*origin: '127.0.0.1:2222')*/));

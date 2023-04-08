@@ -6,7 +6,7 @@ import 'package:main/src/widgets/property_edit.dart';
 
 import 'row_col_layout.dart';
 
-class PropertiesEdit extends StatelessWidget {
+class PropertiesEdit extends StatefulWidget {
   final List<R>? layout;
   final Widget? Function(dynamic name)? lookupfunction;
   final bool disabled;
@@ -26,10 +26,15 @@ class PropertiesEdit extends StatelessWidget {
       this.onClicked});
 
   @override
+  State<PropertiesEdit> createState() => _PropertiesEditState();
+}
+
+class _PropertiesEditState extends State<PropertiesEdit> {
+  @override
   Widget build(BuildContext context) {
-    if (layout != null) {
+    if (widget.layout != null) {
       return RowColLayout(
-          layout: layout!,
+          layout: widget.layout!,
           lookupfunction: _lookupfunction,
           useScreenSize: false);
     }
@@ -38,39 +43,35 @@ class PropertiesEdit extends StatelessWidget {
     //   children: variables.map<Widget>((p) => createPropertyEdit(p)).toList());
   }
 
+  String? Function(dynamic)? _getValidator(Cell cell) {
+    switch (cell.type!) {
+      case Var2.text:
+      case Var2.password:
+      case Var2.ip:
+      case Var2.number:
+        return (value_) =>
+            value_ != null && value_.length > 0 ? null : 'required';
+
+      case Var2.checkbox:
+      case Var2.button:
+        return null;
+    }
+  }
+
   Widget? _lookupfunction(dynamic value) {
     if (value is Cell) {
       return PropertyEdit(
           cell: value,
-          initalValue: value.getValue(target),
-          onClicked: onClicked,
-          onSubmit: !disabled ? onSubmit : null,
-          onChanged: onChanged);
+          initialValue: value.getValue(widget.target),
+          onClicked: widget.onClicked,
+          onFieldSubmitted: !widget.disabled && widget.onSubmit != null
+              ? (value_) => widget.onSubmit?.call(value, value_)
+              : null,
+          onChanged: widget.onChanged != null
+              ? (value_) => widget.onChanged?.call(value, value_)
+              : null,
+          validator: _getValidator(value));
     }
-    return lookupfunction?.call(value);
+    return widget.lookupfunction?.call(value);
   }
-
-  /*Widget createPropertyEdit(Cell cell) {
-    return PropertyEdit(
-        cell: cell,
-        initalValue: (target is Map<String, dynamic> && cell.varName != null)
-            ? (target as Map<String, dynamic>)[cell.varName!]
-            : cell.getValue(target),
-        onChanged: (cell, v) {
-          if (target is Map<String, dynamic> && cell.varName != null) {
-            (target as Map<String, dynamic>)[cell.varName!] = v;
-          } else if (cell.varName == null) {
-            cell.setValue(target, v);
-          }
-          onChanged?.call(cell);
-        },
-        onSubmit: (cell, v) {
-          if (target is Map<String, dynamic> && cell.varName != null) {
-            (target as Map<String, dynamic>)[cell.varName!] = v;
-          } else {
-            cell.setValue(target, v);
-          }
-          onSubmit?.call(cell);
-        });
-  }*/
 }

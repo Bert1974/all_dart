@@ -26,45 +26,51 @@ class Cell {
 
   Cell(this.type, this.name, {this.varName, this.getter, this.setter});
   getValue(target) {
-    if (target is Map<String, dynamic>) {
-      return target[varName];
-    } else if (getter != null) {
+    dynamic result;
+    if (getter != null) {
       switch (type) {
         case Var2.ip:
         case Var2.text:
         case Var2.password:
-          return getter!(target);
+          result = getter!(target);
+          break;
 
         case Var2.number:
-          return getter!(target)?.toString();
+          result = getter!(target)?.toString();
+          break;
 
         default:
           throw UnsupportedError('Not implemented');
       }
+    } else if (target is Map<String, dynamic>) {
+      result = target[varName];
+    } else {
+      throw UnsupportedError('Not implemented');
     }
-    return null;
+    return result;
   }
 
   setValue(target, value) {
-    if (target is Map<String, dynamic>) {
-      target[varName!] = value;
-    } else {
-      if (setter != null) {
-        switch (type) {
-          case Var2.ip:
-          case Var2.text:
-          case Var2.password:
-            setter!(target, value);
-            break;
-          case Var2.number:
-            setter!(target, value != null ? int.parse(value as String) : null);
-            break;
+    if (setter != null) {
+      switch (type) {
+        case Var2.ip:
+        case Var2.text:
+        case Var2.password:
+          setter!(target, value);
+          break;
+        case Var2.number:
+          setter!(target, value != null ? int.parse(value as String) : null);
+          break;
 
-          default:
-            throw UnsupportedError('Not implemented');
-        }
+        default:
+          throw UnsupportedError('Not implemented');
       }
+      return;
+    } else if (target is Map<String, dynamic>) {
+      target[varName!] = value;
+      return;
     }
+    throw UnsupportedError('Not implemented');
   }
 }
 
@@ -90,43 +96,73 @@ class _Layout {
 
 extension _CExtension on C {
   int getOffset(int size, _Layout layout) {
+    int? result;
     if (offsets != null) {
-      if (size >= 5 && offsets!.containsKey('xxl')) {
-        return offsets!['xxl']!;
-      } else if (size >= 4 && offsets!.containsKey('xl')) {
-        return offsets!['xl']!;
-      } else if (size >= 3 && offsets!.containsKey('lg')) {
-        return offsets!['lg']!;
-      } else if (size >= 2 && offsets!.containsKey('md')) {
-        return offsets!['md']!;
-      } else if (size >= 1 && offsets!.containsKey('sm')) {
-        return offsets!['sm']!;
-      } else if (size >= 0 && offsets!.containsKey('xs')) {
-        return offsets!['xs']!;
+      if (offsets!.containsKey('xs')) {
+        result = offsets!['xs']!;
+      }
+      if (offsets!.containsKey('sm')) {
+        if (size >= 1 || result == null) {
+          result = offsets!['sm']!;
+        }
+      }
+      if (offsets!.containsKey('md')) {
+        if (size >= 2 || result == null) {
+          result = offsets!['md']!;
+        }
+      }
+      if (offsets!.containsKey('lg')) {
+        if (size >= 3 || result == null) {
+          result = offsets!['lg']!;
+        }
+      }
+      if (offsets!.containsKey('xl')) {
+        if (size >= 4 || result == null) {
+          result = offsets!['xl']!;
+        }
+      }
+      if (offsets!.containsKey('xxl')) {
+        if (size >= 5 || result == null) {
+          result = offsets!['xxl']!;
+        }
       }
     }
-    return 0;
+    return result ?? 0;
   }
 
   int getSize(int size, _Layout layout) {
+    int? result;
     if (sizes != null) {
-      if (size >= 5 && sizes!.containsKey('xxl')) {
-        return sizes!['xxl']!;
-      } else if (size >= 4 && sizes!.containsKey('xl')) {
-        return sizes!['xl']!;
-      } else if (size >= 3 && sizes!.containsKey('lg')) {
-        return sizes!['lg']!;
-      } else if (size >= 2 && sizes!.containsKey('md')) {
-        return sizes!['md']!;
-      } else if (size >= 1 && sizes!.containsKey('sm')) {
-        return sizes!['sm']!;
-      } else if (size >= 0 && sizes!.containsKey('xs')) {
-        return sizes!['xs']!;
-      } else {
-        return 1;
+      if (sizes!.containsKey('xs')) {
+        result = sizes!['xs']!;
+      }
+      if (sizes!.containsKey('sm')) {
+        if (size >= 1 || result == null) {
+          result = sizes!['sm']!;
+        }
+      }
+      if (sizes!.containsKey('md')) {
+        if (size >= 2 || result == null) {
+          result = sizes!['md']!;
+        }
+      }
+      if (sizes!.containsKey('lg')) {
+        if (size >= 3 || result == null) {
+          result = sizes!['lg']!;
+        }
+      }
+      if (sizes!.containsKey('xl')) {
+        if (size >= 4 || result == null) {
+          result = sizes!['xl']!;
+        }
+      }
+      if (sizes!.containsKey('xxl')) {
+        if (size >= 5 || result == null) {
+          result = sizes!['xxl']!;
+        }
       }
     }
-    return 0;
+    return result ?? 1;
   }
 }
 
@@ -163,7 +199,6 @@ class RowColLayout extends StatelessWidget {
       } else {
         size = 0;
       }
-
       return _doLayoutArray(layout, size, constraints, _Layout());
     });
   }
@@ -233,6 +268,9 @@ class RowColLayout extends StatelessWidget {
   }
 
   _getWidget(C c, int size, double realw) {
+    if (c.data is Widget? Function()) {
+      return (c.data as Widget? Function()).call();
+    }
     if (c.data is R) {
       return _doLayoutRow(
           c.data as R, size, BoxConstraints(maxWidth: realw), _Layout());

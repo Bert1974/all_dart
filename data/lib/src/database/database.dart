@@ -13,7 +13,19 @@ enum DatabaseTypes { local, network }
 
 class NetworkDatabase extends Database {
   String? _token;
-  var baseUrl = 'http://127.0.0.1:2222/';
+  late final String baseUrl;
+  //var baseUrl = 'http://127.0.0.1:2222/';
+
+  NetworkDatabase(String baseUrl) {
+    if (!baseUrl.endsWith('/')) {
+      baseUrl += '/';
+    }
+    /* if (!baseUrl.startsWith('http://') && !baseUrl.startsWith('https://')) {
+
+    }*/
+    // ignore: prefer_initializing_formals
+    this.baseUrl = baseUrl;
+  }
 
   Network _nw() {
     return Network(baseUrl, _token);
@@ -60,10 +72,13 @@ abstract class Database {
 
   void dispose() {}
 
-  factory Database.openNetwork() => NetworkDatabase();
+  factory Database.openNetwork(String server) => NetworkDatabase(server);
+
+  static bool get checkStore => openStore_(null) != null;
 
   //for server
-  static Database? openStore() => (_store ??= openStore_());
+  static Database? openStore(String databasefile) =>
+      (_store ??= openStore_(databasefile));
 
 /*  FutureOr<Database> forIsolate(ByteData reference) async {
     var result = _store!.setReference(reference)._(reference);
