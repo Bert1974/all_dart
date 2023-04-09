@@ -78,7 +78,7 @@ class PropertyEdit extends FormField<dynamic> {
                       widget.onSubmitted?.call(value);
                     },
               onChanged: (value) {
-                state.didChange(state._controller.text);
+                state._newValue(value);
               },
               //     validator: null, // (v) => v == null || v == "" ? "needed" : null,
               keyboardType: widget.cell.type == Var2.number
@@ -115,9 +115,11 @@ class PropertyEdit extends FormField<dynamic> {
           style: TextButton.styleFrom(
             textStyle: const TextStyle(fontSize: 20),
           ),
-          onPressed: () async {
-            await widget.onClicked?.call(widget.cell);
-          },
+          onPressed: widget.enabled
+              ? () async {
+                  await widget.onClicked?.call(widget.cell);
+                }
+              : null,
           child: Text(widget.cell.name!),
         );
       case Var2.datetime:
@@ -150,11 +152,14 @@ class _PropertyEditImplState extends FormFieldState<dynamic> {
       case Var2.password:
       case Var2.url:
       case Var2.number:
+      case Var2.file:
+      case Var2.directory:
         _controller.value = _controller.value.copyWith(text: super.value ?? '');
         break;
       case Var2.datetime:
         throw UnsupportedError('Not implemented');
-      default:
+      case Var2.checkbox:
+      case Var2.button:
         break;
     }
     return super.build(context);
@@ -167,20 +172,6 @@ class _PropertyEditImplState extends FormFieldState<dynamic> {
     // _widget.onSaved?.call(value);
   }
 
-  @override
-  void didChange(dynamic value) {
-    super.didChange(value);
-    save();
-    //_widget.onSaved?.call(value);
-  }
-/*
-  @protected
-  @override
-  // ignore: use_setters_to_change_properties, (API predates enforcing the lint)
-  void setValue(dynamic value) {
-    super.setValue(value);
-  }*/
-
   @mustCallSuper
   @protected
   @override
@@ -188,5 +179,10 @@ class _PropertyEditImplState extends FormFieldState<dynamic> {
     super.didUpdateWidget(oldWidget);
     super.setValue(_widget.initialValue);
     _controller.value = _controller.value.copyWith(text: super.value ?? '');
+  }
+
+  void _newValue(String value) {
+    didChange(_controller.text);
+    save();
   }
 }

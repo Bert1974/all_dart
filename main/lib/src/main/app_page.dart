@@ -45,7 +45,7 @@ class AppPageState extends State<AppPage> {
     return ScaffoldMessenger(
         child: Scaffold(
             appBar: AppBar(
-              title: widget.child.title,
+              title: widget.child.title(context),
               leading: Row(children: [
                 AppPopupMenuButton<MenuCmd?>(
                     icon: const Icon(Icons.menu),

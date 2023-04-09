@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 abstract class AppPageWidget {
-  Widget get title;
+  Widget title(BuildContext context);
 }
 
 abstract class AppPageStatefulWidget<T extends StatefulWidget>

@@ -7,7 +7,7 @@ import 'package:main/src/pages/settings_page.dart';
 import 'package:main/src/pages/test_page.dart';
 import 'package:main/src/widgets.dart';
 
-MaterialPage<void> createPage<T extends AppPageWidget>(
+MaterialPage<void> _createPage<T extends AppPageWidget>(
     BuildContext context, GoRouterState state, T child) {
   return MaterialPage<void>(
     key: state.pageKey,
@@ -15,7 +15,7 @@ MaterialPage<void> createPage<T extends AppPageWidget>(
   );
 }
 
-String? checkAuthenticated(context, state) {
+String? _checkAuthenticated(context, state) {
   if (AuthenticationHandler.of(context).value.user == null) {
     return '/login';
   }
@@ -29,16 +29,16 @@ class MyRouter extends GoRouter {
       : super(routes: [
           GoRoute(
               path: '/',
-              redirect: checkAuthenticated,
+              redirect: _checkAuthenticated,
               // builder: (context, state) => const LoginPage()
               pageBuilder: (context, state) =>
-                  createPage(context, state, const TestPage())),
+                  _createPage(context, state, const TestPage())),
           GoRoute(
               path: '/settings',
-              redirect: checkAuthenticated,
+              redirect: _checkAuthenticated,
               // builder: (context, state) => const SettingsView()
               pageBuilder: (context, state) =>
-                  createPage(context, state, const SettingsPage())),
+                  _createPage(context, state, const SettingsPage())),
           GoRoute(
               path: '/login',
               redirect: (context, state) {
@@ -48,6 +48,6 @@ class MyRouter extends GoRouter {
                 return null;
               },
               pageBuilder: (context, state) =>
-                  createPage(context, state, const LoginPage())),
+                  _createPage(context, state, const LoginPage())),
         ]);
 }

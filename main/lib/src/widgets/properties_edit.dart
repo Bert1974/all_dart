@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:main/src/widgets/property_edit.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'row_col_layout.dart';
 
@@ -54,20 +55,21 @@ class _PropertiesEditState extends State<PropertiesEdit> {
     }
   }
 
-  String? Function(dynamic)? _getValidator(Cell cell) {
+  String? Function(dynamic)? _getValidator(BuildContext context, Cell cell) {
     String? Function(dynamic)? result;
+    final translations = AppLocalizations.of(context)!;
 
     if (cell.required) {
       result = add(
           result,
           (value_) => value_ != null && value_.toString().isNotEmpty
               ? null
-              : 'Dit veld is verplicht');
+              : translations.validation_required(cell.name ?? cell.varName!));
     }
     return result;
   }
 
-  Widget? _lookupfunction(dynamic value) {
+  Widget? _lookupfunction(BuildContext context, dynamic value) {
     if (value is Cell) {
       return PropertyEdit(
           cell: value,
@@ -81,7 +83,7 @@ class _PropertiesEditState extends State<PropertiesEdit> {
           onSaved: widget.onChanged != null
               ? (value_) => widget.onChanged?.call(value, value_)
               : null,
-          validator: _getValidator(value));
+          validator: _getValidator(context, value));
     }
     return widget.lookupfunction?.call(value);
   }

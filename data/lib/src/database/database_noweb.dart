@@ -64,6 +64,7 @@ class ObjectBoxDatabase extends Database {
       return true;
     } catch (e) {
       //
+      print(e);
     } finally {}
     return false;
   }

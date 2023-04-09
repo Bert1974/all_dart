@@ -74,8 +74,11 @@ class _MyAppState extends State<MyApp> {
                           GlobalWidgetsLocalizations.delegate,
                           GlobalCupertinoLocalizations.delegate,
                         ],
+
+                        locale: _settings.themeController.language?.locale,
                         supportedLocales: const [
-                          Locale('en', ''), // English, no country code
+                          Locale('en', ''), // English, no
+                          Locale('nl', ''), // Dutchcountry code
                         ],
 
                         // Use AppLocalizations to configure the correct application title

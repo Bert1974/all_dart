@@ -1,6 +1,24 @@
 {
-  "appTitle": "main",
+  "appTitle": "all dart",
   "@appTitle": {
     "description": "The title of the application"
+  },
+  "appPreferences": "Settings",
+  "errorSaving": "Error saving",
+
+  "login_title": "Login",
+  "login_database_dir": "Database directory",
+  "login_server_url": "Server addres (url)",
+  "login_name": "Login",
+  "login_password": "Password",
+  "login_connect": "Connect",
+
+  "validation_required": "{fieldName} is required",
+  "@validation_required": {
+    "placeholders": {
+      "fieldName": {
+        "type": "String"
+      }
+    }
   }
 }

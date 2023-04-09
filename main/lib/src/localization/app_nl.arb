@@ -1,0 +1,14 @@
+{
+  "appTitle": "alles dart",
+  "appPreferences": "Instellingen",
+  "errorSaving": "Fout met opslaan",
+
+  "login_title": "Inloggen",
+  "login_database_dir": "Database directory",
+  "login_server_url": "Server adres (url)",
+  "login_name": "Naam",
+  "login_password": "Paswoord",
+  "login_connect": "Inloggen",
+
+  "validation_required": "{fieldName} is verplicht"
+}

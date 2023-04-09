@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:main/src/widgets.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class TestPage extends AppPageStatefulWidget<TestPage> {
   const TestPage({super.key});
@@ -8,7 +9,8 @@ class TestPage extends AppPageStatefulWidget<TestPage> {
   State<TestPage> createState() => _TestPageState();
 
   @override
-  Widget get title => const Text("Still testing");
+  Widget title(BuildContext context) =>
+      Text(AppLocalizations.of(context)!.appTitle);
 }
 
 class _TestPageState extends State<TestPage> {

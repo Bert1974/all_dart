@@ -4,6 +4,7 @@ import 'package:main/main.dart';
 import 'package:main/src/settings/authentication.dart';
 import 'package:main/src/widgets.dart';
 import 'package:path/path.dart' as p;
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class LoginPage extends AppPageStatefulWidget<LoginPage> {
   const LoginPage({super.key});
@@ -12,7 +13,8 @@ class LoginPage extends AppPageStatefulWidget<LoginPage> {
   State<LoginPage> createState() => _LoginPageState();
 
   @override
-  Widget get title => const Text("Login");
+  Widget title(BuildContext context) =>
+      Text(AppLocalizations.of(context)!.appTitle);
 }
 
 class _LoginPageState extends State<LoginPage> {
@@ -20,34 +22,41 @@ class _LoginPageState extends State<LoginPage> {
 
   bool get isDisbled => disabled > 0;
 
-  var _login = Login().toJson();
+  final _login = Login().toJson();
   var _storage = <String, dynamic>{};
 
-  List<R> get _layout => [
-        R([
-          C({'xl': 4, 'md': 12},
-              offsets: {'xl': 4, 'md': 0}, data: _createTypeWidgets),
-          if (_storage['type'] == DatabaseTypes.local.index) ...[
-            C({'xs': 12},
-                data: Cell(Var2.directory, 'Database directory',
-                    getter: (value) => _storage['database'],
-                    setter: (target, value) => _storage['database'] = value)),
-          ],
-          if (_storage['type'] == DatabaseTypes.network.index) ...[
-            C({'xs': 12},
-                data: Cell(Var2.url, 'Server',
-                    getter: (value) => _storage['server'],
-                    setter: (target, value) => _storage['server'] = value)
-                  ..required = true),
-          ],
+  List<R> _layout(BuildContext context) {
+    final translations = AppLocalizations.of(context)!;
+    return [
+      R([
+        C({'xl': 4, 'md': 12},
+            offsets: {'xl': 4, 'md': 0}, data: _createTypeWidgets),
+        if (_storage['type'] == DatabaseTypes.local.index) ...[
           C({'xs': 12},
-              data: Cell(Var2.text, 'Login', varName: 'name')..required = true),
+              data: Cell(Var2.directory, translations.login_database_dir,
+                  getter: (value) => _storage['database'],
+                  setter: (target, value) => _storage['database'] = value)),
+        ],
+        if (_storage['type'] == DatabaseTypes.network.index) ...[
           C({'xs': 12},
-              data: Cell(Var2.password, 'Password', varName: 'password')
+              data: Cell(Var2.url, translations.login_server_url,
+                  getter: (value) => _storage['server'],
+                  setter: (target, value) => _storage['server'] = value)
                 ..required = true),
-          C({'xs': 6}, offsets: {'xs': 3}, data: Cell(Var2.button, "Connect")),
-        ])
-      ];
+        ],
+        C({'xs': 12},
+            data: Cell(Var2.text, translations.login_name, varName: 'name')
+              ..required = true),
+        C({'xs': 12},
+            data: Cell(Var2.password, translations.login_password,
+                varName: 'password')
+              ..required = true),
+        C({'xs': 6},
+            offsets: {'xs': 3},
+            data: Cell(Var2.button, translations.login_connect)),
+      ])
+    ];
+  }
 
   Widget? _createTypeWidgets() {
     if (!Database.checkStore) {
@@ -103,12 +112,13 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final translations = AppLocalizations.of(context)!;
     return Dialog(
         //  title: const Text('Login'),
         child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 360),
             child: Column(mainAxisSize: MainAxisSize.min, children: [
-              const Row(children: [Text("Login")]),
+              Row(children: [Text(translations.login_title)]),
               /*  if (disabled == 0)*/ ...[
                 Form(
                     key: const Key("form1"),
@@ -119,7 +129,7 @@ class _LoginPageState extends State<LoginPage> {
                                               Variable(
                                                   "Password", Var2.password),
                                             ],*/
-                            layout: _layout,
+                            layout: _layout(context),
                             target: _login,
                             disabled: isDisbled,
                             autovalidateMode:

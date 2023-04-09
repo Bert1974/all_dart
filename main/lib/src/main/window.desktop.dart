@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:main/main.dart';
 import 'package:main/src/main/window.base.dart';
 import 'package:provider/provider.dart';
@@ -56,38 +57,42 @@ class _MyWindowState extends BaseMyWindowState<MyWindow> with WindowListener {
     bool isPreventClose = await windowManager.isPreventClose();
 
     if (isPreventClose) {
-      _askClose(() {
+      await _askClose(() {
         exit(0);
       });
     }
   }
 
-  _askClose(void Function() doExit) {
-    // ignore: use_build_context_synchronously
-    showDialog(
-      context: _pageContext.context!,
-      builder: (_) {
-        return AlertDialog(
-          title: const Text('Are you sure you want to close this window?'),
-          actions: [
-            TextButton(
-              child: const Text('No'),
-              onPressed: () {
-                Navigator.of(_pageContext.context!).pop();
-              },
-            ),
-            TextButton(
-              child: const Text('Yes'),
-              onPressed: () {
-                doExit();
-                // Navigator.pop(_pageContext.context!);
-                //    /*await*/ windowManager.destroy();
-              },
-            ),
-          ],
-        );
-      },
-    );
+  _askClose(void Function() doExit) async {
+    if (GoRouter.of(_pageContext.context!).location == '/login') {
+      doExit();
+    } else {
+      // ignore: use_build_context_synchronously
+      await showDialog(
+        context: _pageContext.context!,
+        builder: (_) {
+          return AlertDialog(
+            title: const Text('Are you sure you want to close this window?'),
+            actions: [
+              TextButton(
+                child: const Text('No'),
+                onPressed: () {
+                  Navigator.of(_pageContext.context!).pop();
+                },
+              ),
+              TextButton(
+                child: const Text('Yes'),
+                onPressed: () {
+                  doExit();
+                  // Navigator.pop(_pageContext.context!);
+                  //    /*await*/ windowManager.destroy();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 
   GlobalKey mainKey = GlobalKey();

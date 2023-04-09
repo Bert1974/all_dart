@@ -193,7 +193,7 @@ extension _CExtension on C {
 
 class RowColLayout extends StatelessWidget {
   final List<R> layout;
-  final Widget? Function(dynamic data)? lookupfunction;
+  final Widget? Function(BuildContext context, dynamic data)? lookupfunction;
   final bool useScreenSize;
   const RowColLayout(
       {super.key,
@@ -224,22 +224,22 @@ class RowColLayout extends StatelessWidget {
       } else {
         size = 0;
       }
-      return _doLayoutArray(layout, size, constraints, _Layout());
+      return _doLayoutArray(context, layout, size, constraints, _Layout());
     });
   }
 
-  Widget _doLayoutArray(
-      List<R> rows, int size, BoxConstraints constraints, _Layout layout) {
+  Widget _doLayoutArray(BuildContext context, List<R> rows, int size,
+      BoxConstraints constraints, _Layout layout) {
     List<Widget> result = [];
 
     for (var row in rows) {
-      result.addAll(_doLayoutRow(row, size, constraints, layout));
+      result.addAll(_doLayoutRow(context, row, size, constraints, layout));
     }
     return Column(children: result);
   }
 
-  List<Widget> _doLayoutRow(
-      R row, int size, BoxConstraints constraints, _Layout layout) {
+  List<Widget> _doLayoutRow(BuildContext context, R row, int size,
+      BoxConstraints constraints, _Layout layout) {
     List<Row> result = [];
     List<Widget>? currentrow;
 
@@ -265,9 +265,10 @@ class RowColLayout extends StatelessWidget {
         currentrow = [];
       }
       double realw = constraints.maxWidth * colsize / 12;
-      var widget =
-          ((column.data != null) ? lookupfunction?.call(column.data) : null) ??
-              _getWidget(column, size, realw);
+      var widget = ((column.data != null)
+              ? lookupfunction?.call(context, column.data)
+              : null) ??
+          _getWidget(context, column, size, realw);
 
       if (widget != null) {
         if (widget is List<Widget>) {
@@ -292,16 +293,16 @@ class RowColLayout extends StatelessWidget {
     return result;
   }
 
-  _getWidget(C c, int size, double realw) {
+  _getWidget(BuildContext context, C c, int size, double realw) {
     if (c.data is Widget? Function()) {
       return (c.data as Widget? Function()).call();
     }
     if (c.data is R) {
-      return _doLayoutRow(
-          c.data as R, size, BoxConstraints(maxWidth: realw), _Layout());
+      return _doLayoutRow(context, c.data as R, size,
+          BoxConstraints(maxWidth: realw), _Layout());
     } else if (c.data is List<R>) {
-      return _doLayoutArray(
-          c.data as List<R>, size, BoxConstraints(maxWidth: realw), _Layout());
+      return _doLayoutArray(context, c.data as List<R>, size,
+          BoxConstraints(maxWidth: realw), _Layout());
     }
     return null;
   }
