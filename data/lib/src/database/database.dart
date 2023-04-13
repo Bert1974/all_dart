@@ -1,74 +1,47 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:data/src/network.dart';
+import 'package:data/data.dart';
+import 'package:data/src/localization/messages_nl.i18n.dart';
 
 import 'database_stub.dart'
     if (dart.library.io) 'database_noweb.dart'
     if (dart.library.js) 'database_web.dart';
 
-import '../models/view_models.dart';
-
 enum DatabaseTypes { local, network }
 
-class NetworkDatabase extends Database {
-  String? _token;
-  late final String baseUrl;
+class Result<T> {
+  final T? result;
+  final String? error;
 
-  NetworkDatabase(String baseUrl) {
-    if (!baseUrl.endsWith('/')) {
-      baseUrl += '/';
-    }
-    /* if (!baseUrl.startsWith('http://') && !baseUrl.startsWith('https://')) {
+  Result._({this.result, this.error});
 
-    }*/
-    // ignore: prefer_initializing_formals
-    this.baseUrl = baseUrl;
-  }
+  factory Result.value(T result) => Result._(result: result);
+  factory Result.error(String error) => Result._(error: error);
+  factory Result.network(NetworkResponse res) => Result._(error: res.message);
+}
 
-  Network _nw() {
-    return Network(baseUrl, _token);
-  }
+class MessagesHelper {
+  static final List<Messages> _languages = [
+    const Messages(),
+    const MessagesNl(),
+  ];
+  static Messages forLocale(String? languageCode) =>
+      languageCode == null || languageCode.isEmpty
+          ? getDefault()
+          : _languages.singleWhere(
+              (element) => element.languageCode.startsWith(languageCode),
+              orElse: () => getDefault());
 
-  @override
-  FutureOr<bool> open() async {
-    return true;
-  }
+  static Messages getDefault() => _languages[0];
+}
 
-  @override
-  FutureOr<User?> login(String name, String password) async {
-    var res =
-        await _nw().postData('login', {'name': name, 'password': password});
-    if (res.success) {
-      _token = res.data['token'];
-      var user = User.fromJson(res.data['user']);
-      return user;
-    }
-    return null;
-  }
-
-  @override
-  Future<bool> saveUserSettings(
-      User user, String type, Map<String, dynamic> data) async {
-    var res =
-        await _nw().postData('user/setting', {'type': type, 'data': data});
-
-    return res.success;
-  }
-
-  @override
-  Future<User?> check(User user) async {
-    var res = await _nw().postData('currentuser', {});
-    if (res.success) {
-      return User.fromJson(res.data['user']);
-    }
-    return null;
-  }
+extension MessagesStringExtension on String {
+  Messages get messages => MessagesHelper.forLocale(this);
+  NetworkMessages get network => messages.network;
 }
 
 abstract class Database {
-  static Database? _store;
-
   Database();
 
   void dispose() {}
@@ -78,13 +51,9 @@ abstract class Database {
   static bool get checkStore => openStore_(null) != null;
 
   //for server
-  static Database? openStore(String databasefile) =>
-      (_store ??= openStore_(databasefile));
+  static Database? openStore(String databasefile) => openStore_(databasefile);
 
-/*  FutureOr<Database> forIsolate(ByteData reference) async {
-    var result = _store!.setReference(reference)._(reference);
-    return result;
-  }*/
+  Database forLocaleTag(String localeTag);
 
   ByteData getReference() {
     throw UnsupportedError('wrong usage');
@@ -98,24 +67,24 @@ abstract class Database {
     throw UnsupportedError('wrong usage');
   }
 
-  FutureOr<bool> open() async {
-    return false;
+  FutureOr<Result<bool>> open() async {
+    throw UnimplementedError();
   }
 
-  FutureOr<User?> login(String name, String password) async {
-    return null;
+  FutureOr<Result<User>> login(String name, String password) async {
+    throw UnimplementedError();
   }
 
   Future<User?> checkToken(String name, String token) async {
-    return null;
+    throw UnimplementedError();
   }
 
   Future<User?> check(User user) async {
-    return null;
+    throw UnimplementedError();
   }
 
   Future<bool> saveUserSettings(
       User user, String type, Map<String, dynamic> data) async {
-    return false;
+    throw UnimplementedError();
   }
 }

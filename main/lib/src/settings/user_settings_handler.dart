@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:data/data.dart';
 import 'package:flutter/material.dart';
 import 'package:main/src/settings/theme_controller.dart';
@@ -12,6 +14,8 @@ class UserSettingsHandler {
 
   void listen() {
     themeController.loadSettings();
+
+    //  updateLanguage(themeController.language);
   }
 
   UserSettingsHandler(this._db, this._auth) {
@@ -30,7 +34,7 @@ class UserSettingsHandler {
     return result?.data;
   }
 
-  Future<bool> updateSettings(String type, Map<String, dynamic> data) async {
+  FutureOr<bool> updateSettings(String type, Map<String, dynamic> data) async {
     if (_auth.value.user != null) {
       var saveOk =
           await _db.db!.saveUserSettings(_auth.value.user!, type, data);

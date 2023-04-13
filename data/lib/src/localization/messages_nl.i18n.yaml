@@ -1,0 +1,19 @@
+general:
+  ok: ok
+  unexpected: Er trad een onverwachte fout op
+  cantopen(String description): Kan $description niet openen
+
+network:
+  unexpectedData: Onverwachte data ontvangen
+  unauthorized: Geen toegang
+  forbidden: U heeft geen rechten tot deze functie
+  servererror: Server fout
+  httperror(int status): Http fout $status
+  errorconnect: Fout met verbinden
+  canceled: Afgebroken
+  error: Fout
+  badCertificate: Slecht certificaat
+  unexpected: Er trad een onverwachte fout op
+
+database:
+  errorAuthenticating: Login/password niet gevonden

@@ -1,0 +1,4 @@
+server:
+  ok: ok
+  accesdenied: Access denied
+  server_error: Server error

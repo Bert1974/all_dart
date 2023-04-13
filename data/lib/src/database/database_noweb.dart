@@ -29,18 +29,46 @@ extension UserSettingsModelExtension on UserSettingsModel {
 class ObjectBoxDatabase extends Database {
   final String databaseDirectory;
   static Store? storeInstance;
-  Store? store;
+  Store? _store;
   Box<UserModel>? usersBox;
   Box<UserSettingsModel>? userDataBox;
   Box<LoginModel>? loginsBox;
   Box<RoleModel>? rolesBox;
   Box<PermissionModel>? permissionBox;
+  late final Messages? _messages;
+  final ObjectBoxDatabase? _main;
 
-  ObjectBoxDatabase(this.databaseDirectory);
+  Store? get store => _main?._store ?? _store;
+
+  ObjectBoxDatabase(this.databaseDirectory)
+      : _messages = null,
+        _main = null;
+
+  ObjectBoxDatabase._forLocaleTag(ObjectBoxDatabase network, String localeTag)
+      : databaseDirectory = network.databaseDirectory,
+        _store = network.store,
+        usersBox = network.usersBox,
+        userDataBox = network.userDataBox,
+        loginsBox = network.loginsBox,
+        rolesBox = network.rolesBox,
+        permissionBox = network.permissionBox,
+        _main = network {
+    //
+    _messages = localeTag.messages;
+  }
+
+  @override
+  Database forLocaleTag(String localeTag) {
+    return ObjectBoxDatabase._forLocaleTag(this, localeTag);
+  }
 
   Future<void> close() async {
-    store?.close();
-    store = null;
+    if (_main != null) {
+      await _main!.close();
+      return;
+    }
+    _store?.close();
+    _store = null;
   }
 
   @override
@@ -50,27 +78,40 @@ class ObjectBoxDatabase extends Database {
 
   @override
   void setReference(ByteData reference) {
-    store = Store.fromReference(getObjectBoxModel(), reference);
+    if (_main != null) {
+      _main!.setReference(reference);
+      return;
+    }
+    _store = Store.fromReference(getObjectBoxModel(), reference);
     _init();
   }
 
   @override
-  FutureOr<bool> open() async {
+  FutureOr<Result<bool>> open() async {
     try {
       storeInstance = openStore(directory: databaseDirectory);
-      store = storeInstance;
+      _store = storeInstance;
+      if (_main != null) {
+        _main!._store = store;
+        _main!._init();
+        _main!.seed();
+        return Result.value(true);
+      }
       _init();
       seed();
-      return true;
+      return Result.value(true);
     } catch (e) {
       //
       print(e);
+      return Result<bool>.error(_messages!.general.cantopen('ObjectBox'));
     } finally {}
-    return false;
   }
 
   @override
   void dispose() {
+    if (_main != null) {
+      throw UnsupportedError('wrong usage');
+    }
     if (storeInstance != null) {
       storeInstance!.close();
       storeInstance = null;
@@ -153,17 +194,17 @@ class ObjectBoxDatabase extends Database {
   }
 
   @override
-  FutureOr<User?> login(String name, String password) async {
+  FutureOr<Result<User>> login(String name, String password) async {
     final result = await _getLogin(Logins.user, name);
 
     if (result != null) {
       if (result.password == password) {
         var q2 = usersBox!.query(UserModel_.login.equals(result.id)).build();
         UserModel user = (await q2.findFirstAsync())!;
-        return user.toVM(result);
+        return Result.value(user.toVM(result));
       }
     }
-    return null;
+    return Result.error("no access");
   }
 
   @override

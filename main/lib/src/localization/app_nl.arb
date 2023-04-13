@@ -10,5 +10,9 @@
   "login_password": "Paswoord",
   "login_connect": "Inloggen",
 
-  "validation_required": "{fieldName} is verplicht"
+  "validation_required": "{fieldName} is verplicht",
+
+  "mainpopupmenu_about": "Over alles dart",
+  "mainpopupmenu_logout": "Uitloggen",
+  "mainpopupmenu_language": "Taal keuze"
 }

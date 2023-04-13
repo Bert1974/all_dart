@@ -2,9 +2,9 @@ import 'package:data/data.dart';
 import 'package:flutter/material.dart';
 import 'package:main/main.dart';
 import 'package:main/src/settings/authentication.dart';
+import 'package:main/src/settings/theme_controller.dart';
 import 'package:main/src/widgets.dart';
 import 'package:path/path.dart' as p;
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class LoginPage extends AppPageStatefulWidget<LoginPage> {
   const LoginPage({super.key});
@@ -172,21 +172,30 @@ class _LoginPageState extends State<LoginPage> {
 
       var dbtype = DatabaseTypes.values[_storage['type'] as int];
 
-      if (await db.open(dbtype, _storage)) {
-        // ignore: use_build_context_synchronously
-        User? user = await auth.login(this.context, Login.fromJson(_login));
+      var themeController = ThemeController.of(context);
+      // final translations = AppLocalizations.of(context)!;
 
-        if (user == null) {
+      Result<bool> r =
+          await db.open(dbtype, _storage, themeController.localeTag);
+
+      if (r.result ?? false) {
+        // ignore: use_build_context_synchronously
+        Result<User?> user =
+            // ignore: use_build_context_synchronously
+            await auth.login(this.context, Login.fromJson(_login));
+
+        if (user.result == null) {
           // ignore: use_build_context_synchronously
-          showSnackError(context, 'Fout met inloggen');
+          showSnackError(context, user.error!);
         } else {
           // ignore: use_build_context_synchronously
           showSnackBar(context, 'inloggen');
         }
       } else {
         // ignore: use_build_context_synchronously
-        showSnackError(context, 'Fout met openen');
+        showSnackError(context, r.error!);
       }
+
       setState(() {
         disabled--;
       });

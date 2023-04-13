@@ -17,7 +17,6 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   final _db = DBHandler();
   late final _auth = AuthenticationHandler(_db);
-  //late final _network = NetworkHandler(_auth);
   late final _settings = UserSettingsHandler(_db, _auth);
 
   @override
@@ -53,61 +52,62 @@ class _MyAppState extends State<MyApp> {
           )
         ],
         builder: (context, child) {
-          return ValueListenableBuilder(
+          return /*ValueListenableBuilder(
               valueListenable: _auth,
-              builder: (context, state, diget) => AnimatedBuilder(
-                    animation: _settings.themeController,
-                    builder: (BuildContext context, Widget? child) {
-                      return MaterialApp.router(
-                        // Providing a restorationScopeId allows the Navigator built by the
-                        // MaterialApp to restore the navigation stack when a user leaves and
-                        // returns to the app after it has been killed while running in the
-                        // background.
-                        restorationScopeId: 'app',
+              builder: (context, state, diget) =>*/
+              AnimatedBuilder(
+            animation: Listenable.merge([_auth, _settings.themeController]),
+            builder: (BuildContext context, Widget? child) {
+              return MaterialApp.router(
+                // Providing a restorationScopeId allows the Navigator built by the
+                // MaterialApp to restore the navigation stack when a user leaves and
+                // returns to the app after it has been killed while running in the
+                // background.
+                restorationScopeId: 'app',
 
-                        // Provide the generated AppLocalizations to the MaterialApp. This
-                        // allows descendant Widgets to display the correct translations
-                        // depending on the user's locale.
-                        localizationsDelegates: const [
-                          AppLocalizations.delegate,
-                          GlobalMaterialLocalizations.delegate,
-                          GlobalWidgetsLocalizations.delegate,
-                          GlobalCupertinoLocalizations.delegate,
-                        ],
+                // Provide the generated AppLocalizations to the MaterialApp. This
+                // allows descendant Widgets to display the correct translations
+                // depending on the user's locale.
+                localizationsDelegates: const [
+                  AppLocalizations.delegate,
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                ],
 
-                        locale: _settings.themeController.language?.locale,
-                        supportedLocales: const [
-                          Locale('en', ''), // English, no
-                          Locale('nl', ''), // Dutchcountry code
-                        ],
+                locale: _settings.themeController.language?.locale,
+                supportedLocales: const [
+                  Locale('en', ''), // English, no
+                  Locale('nl', ''), // Dutchcountry code
+                ],
 
-                        // Use AppLocalizations to configure the correct application title
-                        // depending on the user's locale.
-                        //
-                        // The appTitle is defined in .arb files found in the localization
-                        // directory.
-                        onGenerateTitle: (BuildContext context) =>
-                            AppLocalizations.of(context)!.appTitle,
+                // Use AppLocalizations to configure the correct application title
+                // depending on the user's locale.
+                //
+                // The appTitle is defined in .arb files found in the localization
+                // directory.
+                onGenerateTitle: (BuildContext context) =>
+                    AppLocalizations.of(context)!.appTitle,
 
-                        // Define a light and dark color theme. Then, read the user's
-                        // preferred ThemeMode (light, dark, or system default) from the
-                        // SettingsController to display the correct theme.
-                        theme: ThemeData(),
-                        darkTheme: ThemeData.dark(),
-                        themeMode: _settings.themeController.themeMode,
-                        debugShowCheckedModeBanner: false,
+                // Define a light and dark color theme. Then, read the user's
+                // preferred ThemeMode (light, dark, or system default) from the
+                // SettingsController to display the correct theme.
+                theme: ThemeData(),
+                darkTheme: ThemeData.dark(),
+                themeMode: _settings.themeController.themeMode,
+                debugShowCheckedModeBanner: false,
 
-                        /* routeInformationParser:
+                /* routeInformationParser:
                         appRouter.routeInformationParser,
                         routerDelegate: appRouter.routerDelegate,
                         routeInformationProvider:
                         appRouter.routeInformationProvider,
                         backButtonDispatcher: appRouter.backButtonDispatcher,
 */
-                        routerConfig: appRouter,
-                      );
-                    },
-                  ));
+                routerConfig: appRouter,
+              );
+            },
+          );
         });
   }
 }

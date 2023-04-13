@@ -14,7 +14,7 @@ class AppPopupMenuButton<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) => ConstrainedBox(
       constraints: const BoxConstraints(minWidth: 28, maxWidth: 28),
-      child: PopupMenuButton(
+      child: PopupMenuButton<T>(
         key: key,
         icon: icon,
         onSelected: onSelected,

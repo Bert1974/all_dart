@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:main/main.dart';
+import 'package:main/src/language.dart';
 import 'package:main/src/settings/authentication.dart';
 import 'package:main/src/settings/theme_controller.dart';
 import 'package:main/src/widgets.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 
 /// Displays the various settings that can be customized by the user.

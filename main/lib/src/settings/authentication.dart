@@ -36,11 +36,11 @@ class AuthenticationHandler extends ChangeNotifier
     return Provider.of<AuthenticationHandler>(context, listen: false);
   }
 
-  login(BuildContext context, Login login) async {
-    User? user = await _db.db!.login(login.name, login.password);
+  FutureOr<Result<User>> login(BuildContext context, Login login) async {
+    Result<User> user = await _db.db!.login(login.name, login.password);
 
-    if (user != null) {
-      var login = LoginState.login(user);
+    if (user.result != null) {
+      var login = LoginState.login(user.result!);
       _value = login;
       notifyListeners();
       //    var location = GoRouter.of(context).location;
@@ -50,6 +50,7 @@ class AuthenticationHandler extends ChangeNotifier
       // ignore: use_build_context_synchronously
       context.go('/');
     }
+    return user;
   }
 
   FutureOr<void> refresh() async {
@@ -75,13 +76,15 @@ class AuthenticationHandler extends ChangeNotifier
 }
 
 class DBHandler {
+  Database? _dbMain;
   Database? db;
   DBHandler();
 
   static DBHandler of(BuildContext context) =>
       Provider.of<DBHandler>(context, listen: false);
 
-  open(DatabaseTypes type, Map<String, dynamic> options) async {
+  FutureOr<Result<bool>> open(DatabaseTypes type, Map<String, dynamic> options,
+      String localeTag) async {
     Database? db_;
 
     switch (type) {
@@ -93,16 +96,27 @@ class DBHandler {
         break;
     }
     if (db_ == null) {
-      return false;
+      return Result.value(false);
     }
-    db?.dispose();
+    _dbMain?.dispose();
+    _dbMain = null;
     db = null;
-    if (!(await db_.open())) {
-      return false;
+
+    var r = await db_.forLocaleTag(localeTag).open();
+
+    if (r.result ?? false) {
+      _dbMain = db_;
+      db = _dbMain!.forLocaleTag(localeTag);
+      return r;
     }
-    db = db_;
-    return true;
+    _dbMain?.dispose();
+    _dbMain = null;
+    return r;
     // User? user = await db_.login(login.name, login.password);
+  }
+
+  void updateLanguage(String localeTag) {
+    db = _dbMain?.forLocaleTag(localeTag);
   }
 }
 /*Handler {

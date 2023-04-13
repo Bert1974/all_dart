@@ -1,0 +1,19 @@
+general:
+  ok: ok
+  unexpected: Unexpected error
+  cantopen(String description): Cant open $description
+
+network:
+  unexpectedData: Unexpected data received
+  unauthorized: Not authorized
+  forbidden: Forbidden
+  servererror: Server error
+  httperror(int status): Http error $status
+  errorconnect: Error connecting
+  canceled: Canceled
+  error: Error
+  badCertificate: Bad certificate
+  unexpected: Unexpected error
+
+database:
+  errorAuthenticating: Login/password not found
