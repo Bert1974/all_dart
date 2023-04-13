@@ -1,3 +1,4 @@
+import 'package:data/data.dart';
 import 'package:objectbox/objectbox.dart';
 
 class Logins {
@@ -89,7 +90,67 @@ class PermissionModel {
 
   PermissionModel(this.name, this.tag);
 }
+
+class ServerOS {
+  static final int mac = 1;
+  static final int linux = 2;
+  static final int windows = 4;
+}
+
+abstract class BaseModel {
+  bool canAccess(User user) {
+    return ((this as dynamic).users as ToMany<UserModel>)
+            .any((u) => u.id == user.id) ||
+        user.roles.any((r) => ((this as dynamic).roles as ToMany<RoleModel>)
+            .any((r2) => r2.tag == r)) ||
+        user.permissions.any((p) =>
+            ((this as dynamic).permissions as ToMany<PermissionModel>)
+                .any((p2) => p2.tag == p));
+  }
+
+  void created(UserModel user) {
+    ((this as dynamic).createdBy as ToOne<UserModel>).target = user;
+    (this as dynamic).createdAt = DateTime.now();
+    ((this as dynamic).users as ToMany<UserModel>).add(user);
+  }
+}
+
+/*class ServerConnectionTypes { login
+  static int localhost, ssh }
+*/
+@Entity()
+class ServerModel extends BaseModel {
+  @Id()
+  int id;
+
+  late String name;
+  late String? server; // null for localhost
+  late int os;
+
+  ServerModel(
+      {this.id = 0, this.name = "", this.server, this.os = 0, this.createdAt});
+
+  final createdBy = ToOne<UserModel>();
+
+  @Property(type: PropertyType.date)
+  late final DateTime? createdAt;
+
+  final users = ToMany<UserModel>();
+  final roles = ToMany<RoleModel>();
+  final permissions = ToMany<PermissionModel>();
+}
 /*
+@Entity()
+class ServerConnectionModel {
+  @Id()
+  int id = 0;
+
+  late String name;
+  late int type;
+
+  ServerConnectionModel({this.name = "", this.type = 0});
+}*/
+/* 
 @Entity()
 class ItemModel {
   @Id()

@@ -79,6 +79,19 @@ class User {
   Map<String, dynamic> toJson() => _$UserToJson(this);
 }
 
+@JsonSerializable()
+class Server {
+  int id;
+
+  late String name;
+  late String? server; // null for localhost
+  late int os;
+
+  Server({this.id = 0, this.name = "", this.server, os = 0});
+  factory Server.fromJson(Map<String, dynamic> json) => _$ServerFromJson(json);
+  Map<String, dynamic> toJson() => _$ServerToJson(this);
+}
+
 class UserSettings {
   late String? type;
   late dynamic data;
