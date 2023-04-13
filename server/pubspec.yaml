@@ -16,5 +16,7 @@ dependencies:
   json_annotation: ^4.8.0
 
 dev_dependencies:
+  i18n: ^4.0.2
+  build_runner: ^2.3.3
   lints: ^2.0.0
   test: ^1.21.0

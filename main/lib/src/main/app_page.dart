@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:main/main.dart';
+import 'package:main/src/language.dart';
 import 'package:main/src/settings/authentication.dart';
+import 'package:main/src/settings/theme_controller.dart';
 import 'package:main/src/widgets.dart';
 
 enum MenuCmd { about, logout }
@@ -42,31 +44,15 @@ class AppPageState extends State<AppPage> {
   @override
   Widget build(BuildContext context) {
     var auth = AuthenticationHandler.of(context);
+    final themeController = ThemeController.of(context);
+    //  final settings = UserSettingsHandler.of(context);
+    //final auth = AuthenticationHandler.of(context);
+    final translations = AppLocalizations.of(context)!;
     return ScaffoldMessenger(
         child: Scaffold(
             appBar: AppBar(
               title: widget.child.title(context),
-              leading: Row(children: [
-                AppPopupMenuButton<MenuCmd?>(
-                    icon: const Icon(Icons.menu),
-                    onSelected: (value) async {
-                      switch (value) {
-                        case MenuCmd.logout:
-                          {
-                            await auth.logout(context);
-                          }
-                          break;
-                        default:
-                          break;
-                      }
-                    },
-                    itemBuilder: (context) => [
-                          const PopupMenuItem<MenuCmd?>(
-                              value: MenuCmd.about, child: Text("About")),
-                          if (auth.value.user != null)
-                            const PopupMenuItem<MenuCmd?>(
-                                value: MenuCmd.logout, child: Text("Log out"))
-                        ]),
+              leading: Row(mainAxisSize: MainAxisSize.min, children: [
                 if (Navigator.canPop(context))
                   AppIconButton(
                     icon: const Icon(Icons.arrow_back),
@@ -97,6 +83,44 @@ class AppPageState extends State<AppPage> {
                       context.push('/settings');
                     },
                   ),
+                AppPopupMenuButton<dynamic>(
+                    icon: const Icon(Icons.menu),
+                    onSelected: (value) async {
+                      switch (value) {
+                        case MenuCmd.logout:
+                          {
+                            await auth.logout(context);
+                          }
+                          break;
+                        default:
+                          break;
+                      }
+                    },
+                    itemBuilder: (context) => [
+                          if (auth.value.user == null)
+                            PopupMenuItem<Language?>(
+                                child: PopupMenuButton(
+                              onSelected: (value) async {
+                                if (value != null) {
+                                  //       themeController.setLanguage(value);
+                                }
+                              },
+                              child: Text(translations.mainpopupmenu_language),
+                              itemBuilder: (_) {
+                                return languages
+                                    .map((l) => PopupMenuItem<Language?>(
+                                        value: l, child: Text(l.description)))
+                                    .toList();
+                              },
+                            )),
+                          PopupMenuItem<MenuCmd?>(
+                              value: MenuCmd.about,
+                              child: Text(translations.mainpopupmenu_about)),
+                          if (auth.value.user != null)
+                            PopupMenuItem<MenuCmd?>(
+                                value: MenuCmd.logout,
+                                child: Text(translations.mainpopupmenu_logout))
+                        ]),
               ],
             ),
 

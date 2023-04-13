@@ -20,5 +20,9 @@
         "type": "String"
       }
     }
-  }
+  },
+
+  "mainpopupmenu_about": "About",
+  "mainpopupmenu_logout": "Log out",
+  "mainpopupmenu_language": "Language"
 }

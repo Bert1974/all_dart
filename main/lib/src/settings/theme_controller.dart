@@ -1,6 +1,8 @@
+import 'dart:async';
+
 import 'package:data/data.dart';
 import 'package:flutter/material.dart';
-import 'package:main/main.dart';
+import 'package:main/src/language.dart';
 import 'package:main/src/settings/user_settings_handler.dart';
 import 'package:provider/provider.dart';
 
@@ -9,7 +11,7 @@ class ThemeSettings {
   late Language? _language;
 
   ThemeSettings() {
-    _themeMode = ThemeMode.dark;
+    _themeMode = ThemeMode.system;
     _language = null;
   }
 
@@ -46,6 +48,7 @@ class ThemeController with ChangeNotifier {
   ThemeMode get themeMode => settings._themeMode;
 
   Language? get language => settings._language;
+  String get localeTag => settings._language?.toLanguageTag() ?? 'en';
 
   /// Load the user's settings from the SettingsService. It may load from a
   /// local database or the internet. The controller only knows it can load the
@@ -59,7 +62,7 @@ class ThemeController with ChangeNotifier {
   }
 
   /// Update and persist the ThemeMode based on the user's selection.
-  Future<bool> updateThemeMode(ThemeMode newThemeMode) async {
+  FutureOr<bool> updateThemeMode(ThemeMode newThemeMode) async {
     // Do not perform any work if new and old ThemeMode are identical
     if (newThemeMode == settings._themeMode) return true;
 
@@ -72,7 +75,7 @@ class ThemeController with ChangeNotifier {
   }
 
   /// Update and persist the ThemeMode based on the user's selection.
-  Future<bool> updateLocale(Language? newLanguage) async {
+  FutureOr<bool> updateLocale(Language? newLanguage) async {
     if (newLanguage == null) {
       if (settings._language == null) {
         return true;

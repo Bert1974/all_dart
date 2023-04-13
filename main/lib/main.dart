@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:main/src/main/app_page.dart';
 import 'package:main/src/settings/theme_controller.dart';
 import 'package:provider/provider.dart';
+export 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'src/settings/authentication.dart';
 
@@ -36,53 +37,6 @@ class PageContext {
   }
 }
 
-class Language {
-  final String description;
-  final Locale locale;
-
-  const Language(this.locale, this.description);
-
-  @override
-  bool operator ==(Object other) =>
-      other is Language &&
-      description == other.description &&
-      locale.languageCode == other.locale.languageCode &&
-      locale.countryCode == other.locale.countryCode;
-
-  @override
-  int get hashCode => description.hashCode ^ locale.hashCode;
-
-  static Language? fromJson(Map<String, dynamic>? json) => json == null
-      ? null
-      :
-      // ignore: unnecessary_cast
-      languages.map<Language?>((e) => e as Language?).singleWhere(
-              (element) =>
-                  element!.locale.languageCode == json['language'] &&
-                  element.locale.countryCode == json['country'],
-              orElse: () => null) ??
-          languages[0];
-
-  Map<String, dynamic> toJson() => <String, dynamic>{
-        'language': locale.languageCode,
-        'country': locale.countryCode
-      };
-}
-
-List<Language> languages = const [
-  Language(Locale('nl', ''), "Nederlands"),
-  Language(Locale('en', ''), "English"),
-];
-/*
-Language forLocale(Locale locale) {
-  return languages.singleWhere((l) =>
-          l.locale.languageCode ==
-          locale
-              .countryCode /*&&
-      l.locale.languageCode == locale.languageCode*/
-      );
-}
-*/
 bool isAuthenticated(BuildContext context) =>
     AuthenticationHandler.of(context).value.user != null;
 
