@@ -69,4 +69,15 @@ class NetworkDatabase extends Database {
     }
     return null;
   }
+
+  @override
+  Result<List<Server>> getServers(User user) {
+    var res = await _nw().postData('getserver', {});
+    if (res.success) {
+      return User.fromJson(res.data['user']);
+    }
+    return null;
+  }
+  @override
+  bool saveServer(User user, Server server) {}
 }
