@@ -102,7 +102,7 @@ class AppPageState extends State<AppPage> {
                                 child: PopupMenuButton(
                               onSelected: (value) async {
                                 if (value != null) {
-                                  //       themeController.setLanguage(value);
+                                  themeController.setLanguage(context, value);
                                 }
                               },
                               child: Text(translations.mainpopupmenu_language),

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:data/data.dart';
 import 'package:flutter/material.dart';
 import 'package:main/src/language.dart';
+import 'package:main/src/settings/authentication.dart';
 import 'package:main/src/settings/user_settings_handler.dart';
 import 'package:provider/provider.dart';
 
@@ -94,4 +95,12 @@ class ThemeController with ChangeNotifier {
 
   static ThemeController of(BuildContext context) =>
       Provider.of<UserSettingsHandler>(context, listen: false).themeController;
+
+  // when logged out
+  void setLanguage(BuildContext context, Language newLanguage) {
+    settings._language = newLanguage;
+    DBHandler db = DBHandler.of(context);
+    db.updateLanguage(newLanguage.toLanguageTag());
+    notifyListeners();
+  }
 }

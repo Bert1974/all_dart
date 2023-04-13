@@ -56,7 +56,7 @@ class _MyAppState extends State<MyApp> {
               valueListenable: _auth,
               builder: (context, state, diget) =>*/
               AnimatedBuilder(
-            animation: _auth, //_settings.themeController,
+            animation: Listenable.merge([_auth, _settings.themeController]),
             builder: (BuildContext context, Widget? child) {
               return MaterialApp.router(
                 // Providing a restorationScopeId allows the Navigator built by the

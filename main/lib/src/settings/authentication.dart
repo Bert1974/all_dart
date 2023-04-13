@@ -114,6 +114,10 @@ class DBHandler {
     return r;
     // User? user = await db_.login(login.name, login.password);
   }
+
+  void updateLanguage(String localeTag) {
+    db = _dbMain?.forLocaleTag(localeTag);
+  }
 }
 /*Handler {
   final AuthenticationHandler auth;
