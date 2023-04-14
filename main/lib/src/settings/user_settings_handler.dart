@@ -2,10 +2,8 @@ import 'dart:async';
 
 import 'package:data/data.dart';
 import 'package:flutter/material.dart';
-import 'package:main/src/settings/theme_controller.dart';
+import 'package:main/main.dart';
 import 'package:provider/provider.dart';
-
-import 'authentication.dart';
 
 class UserSettingsHandler {
   final DBHandler _db;

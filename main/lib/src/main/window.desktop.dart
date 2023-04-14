@@ -2,11 +2,11 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:main/src/main/window.base.dart';
 import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'page_context.dart';
+import 'window.base.dart';
 
 /// The Widget that configures your application.
 class MyWindow extends BaseMyWindow<MyWindow> {

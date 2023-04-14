@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:main/src/main/window.desktop.dart' as window_dekstop;
-import 'package:main/src/main/window.other.dart' as window_other;
+import './src/main/window.desktop.dart' as window_dekstop;
+import './src/main/window.other.dart' as window_other;
 import 'package:path_provider/path_provider.dart';
 import 'package:window_manager/window_manager.dart';
 

@@ -1,7 +1,6 @@
 import 'package:data/data.dart';
 import 'package:flutter/material.dart';
 import 'package:main/main.dart';
-import 'package:main/src/widgets.dart';
 import 'package:path/path.dart' as p;
 
 class LoginPage extends AppPageStatefulWidget<LoginPage> {

@@ -1,8 +1,6 @@
 import 'package:data/data.dart';
 import 'package:flutter/material.dart';
-import 'package:main/src/settings/authentication.dart';
-import 'package:main/src/widgets.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:main/main.dart';
 
 class TestPage extends AppPageStatefulWidget<TestPage> {
   const TestPage({super.key});

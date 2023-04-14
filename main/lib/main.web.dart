@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:main/src/main/window.other.dart';
+import './src/main/window.other.dart';
 
 String get documentsDirectory => '';
 
