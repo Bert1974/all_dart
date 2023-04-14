@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:main/main.dart';
 import 'package:main/src/language.dart';
-import 'package:main/src/settings/authentication.dart';
-import 'package:main/src/settings/theme_controller.dart';
 import 'package:main/src/widgets.dart';
 import 'package:provider/provider.dart';
 

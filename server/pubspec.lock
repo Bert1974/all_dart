@@ -284,10 +284,10 @@ packages:
     dependency: "direct main"
     description:
       name: i18n
-      sha256: bcba717924c4a591f41e8b0e623ec8417ff9bb08643cdb4e481d392f2fa53577
+      sha256: "6e14b716df08e1c360cc8cedce8217de544a63549cd73352dd483c576c374bd8"
       url: "https://pub.dev"
     source: hosted
-    version: "4.0.2"
+    version: "4.0.3"
   io:
     dependency: transitive
     description:
@@ -404,10 +404,10 @@ packages:
     dependency: transitive
     description:
       name: pointycastle
-      sha256: c3120a968135aead39699267f4c74bc9a08e4e909e86bc1b0af5bfd78691123c
+      sha256: "7c1e5f0d23c9016c5bbd8b1473d0d3fb3fc851b876046039509e18e0c7485f2c"
       url: "https://pub.dev"
     source: hosted
-    version: "3.7.2"
+    version: "3.7.3"
   pool:
     dependency: transitive
     description:

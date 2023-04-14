@@ -5,8 +5,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:main/main.dart';
-import 'package:main/src/settings/theme_controller.dart';
 import 'package:provider/provider.dart';
+
+bool isAuthenticated(BuildContext context) =>
+    AuthenticationHandler.of(context).value.user != null;
 
 class LoginState {
   User? user;

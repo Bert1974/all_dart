@@ -39,6 +39,13 @@ responseException(e) {
 
 responseData(dynamic data) => response("Ok", data, true);
 
+responseResult<T>(Result<T> result, dynamic Function(T data) convert) {
+  if (result.result != null) {
+    return responseData(convert(result.result as dynamic));
+  }
+  return responseError(result.error);
+}
+
 Future<Result<User>> _getUser(Database connection, HttpRequest req) async {
   var header = req.headers.value('Authorization');
   if (header?.startsWith('Bearer ') ?? false) {
@@ -77,6 +84,11 @@ Servermessages getMessages(HttpRequest req) {
     return Servermessages();
   }
   return Servermessages();
+}
+
+extension JsonListExtenstension<T> on List<T> {
+  List<Map<String, dynamic>> toJSon() =>
+      map((i) => (i as dynamic).toJSon() as Map<String, dynamic>).toList();
 }
 
 extension AlfredExtension on Alfred {
@@ -121,16 +133,14 @@ void startServer(data) async {
     return responseOk();
   });
   app.auth('/servers', (req, res, connection, user) async {
-    await connection.getServers(user);
-    return responseOk();
+    return responseResult<List<Server>>(await connection.getServers(user),
+        (List<Server> data) => data.map((s) => s.toJson() as dynamic).toList());
   });
   app.auth('/save_server', (req, res, connection, user) async {
     final body = (await req.body) as Map<String, dynamic>;
-    var r = await connection.saveServer(user, Server.fromJson(body));
-    if (r.result ?? false) {
-      return responseOk();
-    }
-    return responseError(r.error);
+    return responseResult<bool>(
+        await connection.saveServer(user, Server.fromJson(body)),
+        (bool data) => data);
   });
   app.auth('/currentuser', (req, res, connection, user) async {
     return responseData(<String, dynamic>{'user': user});
