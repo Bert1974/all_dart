@@ -5,7 +5,10 @@ import 'package:data/data.dart';
 class NetworkDatabase extends Database {
   String? _token;
   late final String baseUrl;
-  late final Messages? messages;
+  late final Messages? _messages;
+
+  @override
+  Messages get messages => _messages!;
 
   NetworkDatabase(String baseUrl) {
     if (!baseUrl.endsWith('/')) {
@@ -16,14 +19,14 @@ class NetworkDatabase extends Database {
     }*/
     // ignore: prefer_initializing_formals
     this.baseUrl = baseUrl;
-    messages = null;
+    _messages = null;
   }
 
   NetworkDatabase._forLocaleTag(NetworkDatabase network, String localeTag)
       : baseUrl = network.baseUrl,
         _token = network._token {
     //
-    messages = localeTag.messages;
+    _messages = localeTag.messages;
   }
 
   @override
@@ -32,7 +35,7 @@ class NetworkDatabase extends Database {
   }
 
   Network _nw() {
-    return Network(baseUrl, _token, messages!);
+    return Network(baseUrl, _token, _messages!);
   }
 
   @override
@@ -53,12 +56,15 @@ class NetworkDatabase extends Database {
   }
 
   @override
-  Future<bool> saveUserSettings(
+  Future<Result<bool>> saveUserSettings(
       User user, String type, Map<String, dynamic> data) async {
     var res =
         await _nw().postData('user/setting', {'type': type, 'data': data});
 
-    return res.success;
+    if (res.success) {
+      return Result.value(true);
+    }
+    return Result<bool>.network(res);
   }
 
   @override
@@ -71,13 +77,22 @@ class NetworkDatabase extends Database {
   }
 
   @override
-  Result<List<Server>> getServers(User user) {
-    var res = await _nw().postData('getserver', {});
+  FutureOr<Result<List<Server>>> getServers(User user) async {
+    var res = await _nw().postData('servers', {});
     if (res.success) {
-      return User.fromJson(res.data['user']);
+      return Result.value((res.data as List<dynamic>)
+          .map((json) => Server.fromJson(json))
+          .toList());
     }
-    return null;
+    return Result<List<Server>>.network(res);
   }
+
   @override
-  bool saveServer(User user, Server server) {}
+  FutureOr<Result<bool>> saveServer(User user, Server server) async {
+    var res = await _nw().postData('save_server', server.toJson());
+    if (res.success) {
+      return Result.value(true);
+    }
+    return Result<bool>.network(res);
+  }
 }

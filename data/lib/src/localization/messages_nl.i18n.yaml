@@ -2,6 +2,7 @@ general:
   ok: ok
   unexpected: Er trad een onverwachte fout op
   cantopen(String description): Kan $description niet openen
+  unauthenticated: Niet ingelogged
 
 network:
   unexpectedData: Onverwachte data ontvangen

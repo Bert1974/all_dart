@@ -12,6 +12,8 @@ enum DatabaseTypes { local, network }
 abstract class Database {
   Database();
 
+  Messages get messages;
+
   void dispose() {}
 
   factory Database.openNetwork(String server) => NetworkDatabase(server);
@@ -51,11 +53,16 @@ abstract class Database {
     throw UnimplementedError();
   }
 
-  Future<bool> saveUserSettings(
+  Future<Result<bool>> saveUserSettings(
       User user, String type, Map<String, dynamic> data) async {
     throw UnimplementedError();
   }
 
-  Result<List<Server>> getServers(User user);
-  bool saveServer(User user, Server server);
+  FutureOr<Result<List<Server>>> getServers(User user) async {
+    throw UnimplementedError();
+  }
+
+  FutureOr<Result<bool>> saveServer(User user, Server server) async {
+    throw UnimplementedError();
+  }
 }

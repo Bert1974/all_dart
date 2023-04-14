@@ -48,6 +48,9 @@ class ObjectBoxDatabase extends Database {
   late final Messages? _messages;
   final ObjectBoxDatabase? _main;
 
+  @override
+  Messages get messages => _messages!;
+
   Store? get store => _main?._store ?? _store;
 
   ObjectBoxDatabase(this.databaseDirectory)
@@ -245,7 +248,7 @@ class ObjectBoxDatabase extends Database {
   }
 
   @override
-  Future<bool> saveUserSettings(
+  Future<Result<bool>> saveUserSettings(
       User user, String type, Map<String, dynamic> data) async {
     UserModel user2 = usersBox!.get(user.id)!;
     UserSettingsModel? data_ = user2.preferences
@@ -260,25 +263,26 @@ class ObjectBoxDatabase extends Database {
       data_.data = json.encode(data);
       await userDataBox!.putAsync(data_);
     }
-    return true;
+    return Result.value(true);
   }
 
   @override
-  Result<List<Server>> getServers(User user) => Result.value(serverBox!
-      .getAll()
-      .where((s) => s.canAccess(user))
-      .map((s) => s.toVM())
-      .toList());
+  FutureOr<Result<List<Server>>> getServers(User user) =>
+      Result.value(serverBox!
+          .getAll()
+          .where((s) => s.canAccess(user))
+          .map((s) => s.toVM())
+          .toList());
 
   @override
-  bool saveServer(User user, Server server) {
+  FutureOr<Result<bool>> saveServer(User user, Server server) async {
     ServerModel model = UserSettingsModelExtension.fromVM(server);
 
     if (server.id == 0) {
       var user2 = usersBox!.get(user.id)!;
       model.created(user2);
       serverBox!.put(model);
-      return true;
+      return Result.value(true);
     } else {
       ServerModel? current = serverBox!.get(server.id);
       if (current != null) {
@@ -287,10 +291,10 @@ class ObjectBoxDatabase extends Database {
           current.server = server.server;
           current.os = server.os;
           serverBox!.put(current);
-          return true;
+          return Result.value(true);
         }
       }
     }
-    return false;
+    return Result.error(_messages!.general.unexpected);
   }
 }

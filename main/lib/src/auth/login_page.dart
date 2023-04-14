@@ -2,7 +2,6 @@ import 'package:data/data.dart';
 import 'package:flutter/material.dart';
 import 'package:main/main.dart';
 import 'package:main/src/settings/authentication.dart';
-import 'package:main/src/settings/theme_controller.dart';
 import 'package:main/src/widgets.dart';
 import 'package:path/path.dart' as p;
 
@@ -172,11 +171,10 @@ class _LoginPageState extends State<LoginPage> {
 
       var dbtype = DatabaseTypes.values[_storage['type'] as int];
 
-      var themeController = ThemeController.of(context);
+      //var themeController = ThemeController.of(context);
       // final translations = AppLocalizations.of(context)!;
 
-      Result<bool> r =
-          await db.open(dbtype, _storage, themeController.localeTag);
+      Result<bool> r = await db.open(context, dbtype, _storage);
 
       if (r.result ?? false) {
         // ignore: use_build_context_synchronously

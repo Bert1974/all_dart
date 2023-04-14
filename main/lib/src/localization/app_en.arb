@@ -5,6 +5,7 @@
   },
   "appPreferences": "Settings",
   "errorSaving": "Error saving",
+  "notLoggedIn": "Not logged in",
 
   "login_title": "Login",
   "login_database_dir": "Database directory",

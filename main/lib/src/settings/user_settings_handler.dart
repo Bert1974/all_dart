@@ -36,10 +36,9 @@ class UserSettingsHandler {
 
   FutureOr<bool> updateSettings(String type, Map<String, dynamic> data) async {
     if (_auth.value.user != null) {
-      var saveOk =
-          await _db.db!.saveUserSettings(_auth.value.user!, type, data);
+      var saveOk = await _db.saveUserSettings(_auth.value.user!, type, data);
 
-      if (saveOk) {
+      if (saveOk.result ?? false) {
         await _auth.refresh();
         return true;
       }

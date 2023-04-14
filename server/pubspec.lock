@@ -281,7 +281,7 @@ packages:
     source: hosted
     version: "4.0.2"
   i18n:
-    dependency: "direct dev"
+    dependency: "direct main"
     description:
       name: i18n
       sha256: bcba717924c4a591f41e8b0e623ec8417ff9bb08643cdb4e481d392f2fa53577
