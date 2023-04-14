@@ -124,11 +124,16 @@ class ServerModel extends BaseModel {
   int id;
 
   late String name;
-  late String? server; // null for localhost
-  late int os;
+  late String? server;
+  @Transient() // null for localhost
+  late ServerOSTypes os;
 
   ServerModel(
-      {this.id = 0, this.name = "", this.server, this.os = 0, this.createdAt});
+      {this.id = 0,
+      this.name = "",
+      this.server,
+      this.os = ServerOSTypes.windows,
+      this.createdAt});
 
   final createdBy = ToOne<UserModel>();
 
@@ -138,6 +143,21 @@ class ServerModel extends BaseModel {
   final users = ToMany<UserModel>();
   final roles = ToMany<RoleModel>();
   final permissions = ToMany<PermissionModel>();
+
+  // ...and define a field with a supported type,
+  // that is backed by the role field.
+  int get dbOs {
+    return os.index;
+  }
+
+  set dbOs(int value) {
+    os = ServerOSTypes.values[value]; // throws a RangeError if not found
+
+    // or if you want to handle unknown values gracefully:
+    os = value >= 0 && value < ServerOSTypes.values.length
+        ? ServerOSTypes.values[value]
+        : ServerOSTypes.linux;
+  }
 }
 /*
 @Entity()

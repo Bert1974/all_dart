@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:main/main.dart';
 
+import '../dialogs/dialog_parent.dart';
 import 'page_context.dart';
 
 enum MenuCmd { about, logout }
@@ -128,6 +129,6 @@ class AppPageState extends State<AppPage> {
             // In contrast to the default ListView constructor, which requires
             // building all Widgets up front, the ListView.builder constructor lazily
             // builds Widgets as they’re scrolled into view.
-            body: widget.child as Widget));
+            body: DialogParent(child: widget.child as Widget)));
   }
 }
