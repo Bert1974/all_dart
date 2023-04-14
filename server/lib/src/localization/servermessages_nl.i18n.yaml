@@ -1,4 +1,4 @@
 server:
   ok: ok
   accesdenied: Toegang geweigerd
-  server_error: Server fout
+  serverError: Server fout

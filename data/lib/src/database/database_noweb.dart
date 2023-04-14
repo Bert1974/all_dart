@@ -22,8 +22,17 @@ extension UserModelExtension on UserModel {
       userData: preferences.map((i) => i.toVM()).toList());
 }
 
+extension ServerModelExtension on ServerModel {
+  Server toVM() => Server(id: id, name: name, server: server, os: os);
+}
+
 extension UserSettingsModelExtension on UserSettingsModel {
   UserSettings toVM() => UserSettings.fromJsonString(type, data);
+
+  static ServerModel fromVM(Server server) {
+    return ServerModel(
+        id: server.id, name: server.name, server: server.server, os: server.os);
+  }
 }
 
 class ObjectBoxDatabase extends Database {
@@ -35,8 +44,12 @@ class ObjectBoxDatabase extends Database {
   Box<LoginModel>? loginsBox;
   Box<RoleModel>? rolesBox;
   Box<PermissionModel>? permissionBox;
+  Box<ServerModel>? serverBox;
   late final Messages? _messages;
   final ObjectBoxDatabase? _main;
+
+  @override
+  Messages get messages => _messages!;
 
   Store? get store => _main?._store ?? _store;
 
@@ -52,6 +65,7 @@ class ObjectBoxDatabase extends Database {
         loginsBox = network.loginsBox,
         rolesBox = network.rolesBox,
         permissionBox = network.permissionBox,
+        serverBox = network.serverBox,
         _main = network {
     //
     _messages = localeTag.messages;
@@ -124,6 +138,7 @@ class ObjectBoxDatabase extends Database {
     loginsBox = store!.box<LoginModel>();
     rolesBox = store!.box<RoleModel>();
     permissionBox = store!.box<PermissionModel>();
+    serverBox = store!.box<ServerModel>();
   }
 
   @override
@@ -233,7 +248,7 @@ class ObjectBoxDatabase extends Database {
   }
 
   @override
-  Future<bool> saveUserSettings(
+  Future<Result<bool>> saveUserSettings(
       User user, String type, Map<String, dynamic> data) async {
     UserModel user2 = usersBox!.get(user.id)!;
     UserSettingsModel? data_ = user2.preferences
@@ -248,6 +263,38 @@ class ObjectBoxDatabase extends Database {
       data_.data = json.encode(data);
       await userDataBox!.putAsync(data_);
     }
-    return true;
+    return Result.value(true);
+  }
+
+  @override
+  FutureOr<Result<List<Server>>> getServers(User user) =>
+      Result.value(serverBox!
+          .getAll()
+          .where((s) => s.canAccess(user))
+          .map((s) => s.toVM())
+          .toList());
+
+  @override
+  FutureOr<Result<bool>> saveServer(User user, Server server) async {
+    ServerModel model = UserSettingsModelExtension.fromVM(server);
+
+    if (server.id == 0) {
+      var user2 = usersBox!.get(user.id)!;
+      model.created(user2);
+      serverBox!.put(model);
+      return Result.value(true);
+    } else {
+      ServerModel? current = serverBox!.get(server.id);
+      if (current != null) {
+        if (current.canAccess(user)) {
+          current.name = server.name;
+          current.server = server.server;
+          current.os = server.os;
+          serverBox!.put(current);
+          return Result.value(true);
+        }
+      }
+    }
+    return Result.error(_messages!.general.unexpected);
   }
 }

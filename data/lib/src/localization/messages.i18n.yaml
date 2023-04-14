@@ -2,6 +2,7 @@ general:
   ok: ok
   unexpected: Unexpected error
   cantopen(String description): Cant open $description
+  unauthenticated: Not logged in
 
 network:
   unexpectedData: Unexpected data received

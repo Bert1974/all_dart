@@ -2,6 +2,7 @@
   "appTitle": "alles dart",
   "appPreferences": "Instellingen",
   "errorSaving": "Fout met opslaan",
+  "notLoggedIn": "Niet ingelogged",
 
   "login_title": "Inloggen",
   "login_database_dir": "Database directory",

@@ -100,7 +100,7 @@ class ThemeController with ChangeNotifier {
   void setLanguage(BuildContext context, Language newLanguage) {
     settings._language = newLanguage;
     DBHandler db = DBHandler.of(context);
-    db.updateLanguage(newLanguage.toLanguageTag());
+    db.updateLanguage(context, newLanguage.toLanguageTag());
     notifyListeners();
   }
 }
