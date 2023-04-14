@@ -2,10 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:main/src/widgets/property_edit.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-import 'row_col_layout.dart';
+import '../widgets.dart';
 
 class PropertiesEdit extends StatefulWidget {
   final List<R>? layout;

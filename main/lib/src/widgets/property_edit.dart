@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:main/src/widgets.dart';
+import 'package:main/main.dart';
 
 class PropertyEdit extends FormField<dynamic> {
   final Cell cell;

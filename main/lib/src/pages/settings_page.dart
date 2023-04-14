@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:main/main.dart';
-import 'package:main/src/language.dart';
-import 'package:main/src/widgets.dart';
 import 'package:provider/provider.dart';
 
 /// Displays the various settings that can be customized by the user.

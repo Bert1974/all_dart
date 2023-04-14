@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:main/main.dart';
 import 'package:main/src/auth/login_page.dart';
-import 'package:main/src/settings/authentication.dart';
-import 'package:main/src/main/app_page.dart';
 import 'package:main/src/pages/settings_page.dart';
 import 'package:main/src/pages/test_page.dart';
-import 'package:main/src/widgets.dart';
+
+import 'app_page.dart';
 
 MaterialPage<void> _createPage<T extends AppPageWidget>(
     BuildContext context, GoRouterState state, T child) {

@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:main/src/settings/authentication.dart';
+import 'package:main/main.dart';
 import 'package:main/src/main/go_router.dart';
-import 'package:main/src/settings/user_settings_handler.dart';
 import 'package:provider/provider.dart';
 
 /// The Widget that configures your application.
