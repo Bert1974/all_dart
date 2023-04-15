@@ -55,7 +55,7 @@ class _LoginPageState extends State<LoginPage> {
     ];
   }
 
-  Widget? _createTypeWidgets() {
+  Widget? _createTypeWidgets(BuildContext context) {
     if (!Database.checkStore) {
       return null;
     }

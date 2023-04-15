@@ -4,6 +4,25 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'view_models.g.dart';
 
+enum ServerOSTypes { linux, windows, mac }
+
+@JsonSerializable()
+class Server {
+  int id;
+
+  late String name;
+  late String? server; // null for localhost
+  late ServerOSTypes os;
+
+  Server(
+      {this.id = 0,
+      this.name = "",
+      this.server,
+      this.os = ServerOSTypes.windows});
+  factory Server.fromJson(Map<String, dynamic> json) => _$ServerFromJson(json);
+  Map<String, dynamic> toJson() => _$ServerToJson(this);
+}
+
 class UserSettingTypes {
   static final String theme = 'Theme';
 }
@@ -77,19 +96,6 @@ class User {
       this.userData = const []});
   factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
   Map<String, dynamic> toJson() => _$UserToJson(this);
-}
-
-@JsonSerializable()
-class Server {
-  int id;
-
-  late String name;
-  late String? server; // null for localhost
-  late int os;
-
-  Server({this.id = 0, this.name = "", this.server, os = 0});
-  factory Server.fromJson(Map<String, dynamic> json) => _$ServerFromJson(json);
-  Map<String, dynamic> toJson() => _$ServerToJson(this);
 }
 
 class UserSettings {

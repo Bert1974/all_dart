@@ -35,10 +35,7 @@ class _TestPageState extends State<TestPage> {
 
   @override
   Widget build(BuildContext context) {
-    return /*Padding(
-           padding: const EdgeInsets.all(50.0),
-            child:*/
-        Column(children: [
+    return Column(children: [
       Expanded(
           child: SingleChildScrollView(
         child: Column(
@@ -61,24 +58,11 @@ class _TestPageState extends State<TestPage> {
                           SizedBox(
                             height: 51,
                             child: ElevatedButton(
-                              onPressed: () {
-                                /*showDialog(
-                                            context: context,
-                                            barrierDismissible: false,
-                                            builder: (BuildContext context) {
-                                              return WidgetPopup(
-                                                title:
-                                                    'Stap 1/2: Producent toevoegen',
-                                                child:
-                                                    IntermediairProducerAddScreen(
-                                                  type: 'producers',
-                                                  name: 'producent',
-                                                  refresh: _getProducers,
-                                                  nextWidget: ProducerAddScreen(
-                                                      getContext: getContext,
-                                                      refresh: _getProducers),
-                                                ),
-                                              );*/
+                              onPressed: () async {
+                                showDialogPopup(
+                                    context: context,
+                                    title: 'New server',
+                                    child: NewServerDialog(context: context));
                               },
                               child: // Padding(
                                   //   padding: const EdgeInsets.all(8.0),
