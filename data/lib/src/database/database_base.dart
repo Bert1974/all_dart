@@ -10,6 +10,8 @@ import 'database_stub.dart'
 enum DatabaseTypes { local, network }
 
 abstract class Database {
+  static bool? _hasStore;
+
   Database();
 
   Messages get messages;
@@ -18,7 +20,7 @@ abstract class Database {
 
   factory Database.openNetwork(String server) => NetworkDatabase(server);
 
-  static bool get checkStore => openStore_(null) != null;
+  static bool get checkStore => _hasStore ??= openStore_(null) != null;
 
   //for server
   static Database? openStore(String databasefile) => openStore_(databasefile);
