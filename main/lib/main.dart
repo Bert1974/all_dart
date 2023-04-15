@@ -13,3 +13,4 @@ export 'main.stub.dart'
 export 'src/snackbar.dart';
 
 export 'package:main/src/widgets.dart';
+export 'package:main/src/dialogs.dart';
