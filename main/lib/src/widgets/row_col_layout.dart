@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 class R {
   final List<C> columns;
@@ -10,6 +11,7 @@ class C {
   final Map<String, int>? sizes;
   final Map<String, int>? offsets;
   final dynamic data;
+
   C(this.sizes, {this.data, this.offsets}) {
     if (sizes == null && offsets == null) {
       throw Exception('empty column');
@@ -112,10 +114,18 @@ Map<String, double?> _csToSize = {
 
 class _Layout {
   int row = 0, col = 0;
+  double cury = 0, maxy = 0;
+  double x = 0;
+  RenderBox? child;
+
+  _Layout({this.child});
 
   void newRow() {
     row++;
     col = 0;
+    cury += maxy;
+    maxy = 0;
+    x = 0;
   }
 }
 
@@ -191,7 +201,7 @@ extension _CExtension on C {
   }
 }
 
-class RowColLayout extends StatelessWidget {
+class RowColLayout extends StatefulWidget {
   final List<R> layout;
   final Widget? Function(BuildContext context, dynamic data)? lookupfunction;
   final bool useScreenSize;
@@ -202,108 +212,282 @@ class RowColLayout extends StatelessWidget {
       this.useScreenSize = true});
 
   @override
+  State<RowColLayout> createState() => _RowColLayoutState();
+}
+
+class _RowColLayoutState extends State<RowColLayout> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraints) {
-      late double w;
-      if (useScreenSize) {
-        w = MediaQuery.of(context).size.width;
-      } else {
-        w = constraints.maxWidth;
-      }
-      late int size;
-      if (w >= _csToSize['xxl']!) {
-        size = 5;
-      } else if (w >= _csToSize['xl']!) {
-        size = 4;
-      } else if (w >= _csToSize['lg']!) {
-        size = 3;
-      } else if (w >= _csToSize['md']!) {
-        size = 2;
-      } else if (w >= _csToSize['sm']!) {
-        size = 1;
-      } else {
-        size = 0;
-      }
-      return _doLayoutArray(context, layout, size, constraints, _Layout());
-    });
+    return MyMultiChildRenderObjectWidget(
+        context: context,
+        layout: widget.layout,
+        children: _initializeArray(widget.layout));
   }
 
-  Widget _doLayoutArray(BuildContext context, List<R> rows, int size,
-      BoxConstraints constraints, _Layout layout) {
+  List<Widget> _initializeArray(List<R> rows) {
     List<Widget> result = [];
-
     for (var row in rows) {
-      result.addAll(_doLayoutRow(context, row, size, constraints, layout));
-    }
-    return Column(children: result);
-  }
-
-  List<Widget> _doLayoutRow(BuildContext context, R row, int size,
-      BoxConstraints constraints, _Layout layout) {
-    List<Row> result = [];
-    List<Widget>? currentrow;
-
-    for (var column in row.columns) {
-      int colsize = column.getSize(size, layout);
-      int coloffset = column.getOffset(size, layout);
-
-      if (currentrow == null || layout.col + colsize > 12) {
-        layout.newRow();
-        if (currentrow != null) {
-          result.add(Row(children: currentrow));
-        }
-        currentrow = [];
-      }
-      if (coloffset > 0) {
-        layout.col += coloffset;
-        double offw = constraints.maxWidth * coloffset / 12;
-        currentrow.add(SizedBox(width: offw));
-      }
-      if (layout.col + colsize > 12) {
-        layout.newRow();
-        result.add(Row(children: currentrow));
-        currentrow = [];
-      }
-      double realw = constraints.maxWidth * colsize / 12;
-      var widget = ((column.data != null)
-              ? lookupfunction?.call(context, column.data)
-              : null) ??
-          _getWidget(context, column, size, realw);
-
-      if (widget != null) {
-        if (widget is List<Widget>) {
-          currentrow.add(SizedBox(
-              width: realw,
-              child: Column(mainAxisSize: MainAxisSize.max, children: widget)));
-        } else {
-          currentrow.add(SizedBox(
-              width: realw,
-              child:
-                  Column(mainAxisSize: MainAxisSize.max, children: [widget])));
-        }
-      }
-      layout.col += colsize;
-    }
-    if (currentrow != null) {
-      result.add(Row(
-        mainAxisSize: MainAxisSize.max,
-        children: currentrow,
-      ));
+      result.addAll(_initalizeRow(row));
     }
     return result;
   }
 
-  _getWidget(BuildContext context, C c, int size, double realw) {
-    if (c.data is Widget? Function()) {
-      return (c.data as Widget? Function()).call();
+  List<Widget> _initalizeRow(R row) {
+    List<Widget> result = [];
+    for (var column in row.columns) {
+      if (column.data != null) {
+        if (column.data is R) {
+          result.addAll(_initalizeRow(column.data as R));
+        } else if (column.data is List<R>) {
+          result.addAll(_initializeArray(column.data as List<R>));
+        } else {
+          Widget? w;
+          if (widget.lookupfunction != null) {
+            w = widget.lookupfunction!.call(context, column.data);
+          }
+          if (w == null) {
+            if (column.data is Widget? Function(BuildContext context)) {
+              w = (column.data as Widget? Function(BuildContext context))
+                  .call(context);
+            }
+          }
+          if (w == null) {
+            throw Exception('');
+          }
+          result.add(w);
+        }
+      }
     }
-    if (c.data is R) {
-      return _doLayoutRow(context, c.data as R, size,
-          BoxConstraints(maxWidth: realw), _Layout());
-    } else if (c.data is List<R>) {
-      return _doLayoutArray(context, c.data as List<R>, size,
-          BoxConstraints(maxWidth: realw), _Layout());
+    return result;
+  }
+}
+
+class MyParentData extends ContainerBoxParentData<RenderBox> {}
+
+class MyRenderBox extends RenderBox
+    with
+        ContainerRenderObjectMixin<RenderBox, MyParentData>,
+        RenderBoxContainerDefaultsMixin<RenderBox, MyParentData> {
+  final List<R> layout_;
+
+  MyRenderBox({required this.layout_});
+
+  @override
+  void setupParentData(covariant RenderObject child) {
+    if (child.parentData is! MyParentData) {
+      child.parentData = MyParentData();
     }
-    return null;
+  }
+
+  @override
+  @protected
+  Size computeDryLayout(BoxConstraints constraints) {
+    var w = constraints.maxWidth;
+    int size_ = getSize(w);
+    RenderBox? child = firstChild;
+    if (child != null) {
+      var l = _Layout(child: child);
+      _computeDryLayoutArray(layout_, size_, w, l);
+
+      return Size(w, l.maxy);
+    }
+    return Size.zero;
+  }
+
+  void _computeDryLayoutArray(
+      List<R> rows, int size, double maxsize, _Layout layout) {
+    for (var row in rows) {
+      _computeDryLayoutRow(row, size, maxsize, layout);
+    }
+  }
+
+  void _computeDryLayoutRow(R row, int size, double maxsize, _Layout layout) {
+    List<C> currentrow = [];
+
+    for (var column in row.columns) {
+      int colsize = column.getSize(size, layout);
+      int coloffset = column.getOffset(size, layout);
+      double realw = maxsize * colsize / 12;
+
+      Size widgetSize = Size.zero;
+
+      if (column.data != null) {
+        if (column.data is R) {
+          _computeDryLayoutRow(column.data as R, size, realw, layout);
+        } else if (column.data is List<R>) {
+          _computeDryLayoutArray(column.data as List<R>, size, realw, layout);
+        } else {
+          //if (column._widget != null) {
+          final MyParentData childParentData =
+              layout.child!.parentData as MyParentData;
+
+          widgetSize =
+              layout.child!.getDryLayout(BoxConstraints(maxWidth: realw));
+
+          layout.child = childParentData.nextSibling;
+          // }
+        }
+      }
+      // break, will overthrow
+      if (currentrow.isNotEmpty && layout.col + coloffset + colsize > 12) {
+        _computeLayout(widgetSize, layout);
+        currentrow = [];
+      }
+      //check height for line
+      if (layout.maxy < widgetSize.height) {
+        layout.maxy = widgetSize.height;
+      }
+      //add offset
+      if (coloffset > 0) {
+        layout.col += coloffset;
+      }
+      currentrow.add(column);
+
+      layout.col += colsize;
+    }
+    _computeLayout(Size.zero, layout);
+  }
+
+  _computeLayout(Size widgetSize, _Layout layout) {
+    if (layout.maxy < widgetSize.height) {
+      layout.maxy = widgetSize.height;
+    }
+    layout.newRow();
+  }
+
+  @override
+  void paint(PaintingContext context, Offset offset) {
+    defaultPaint(context, offset);
+  }
+
+  @override
+  @protected
+  bool hitTestChildren(BoxHitTestResult result, {required Offset position}) =>
+      defaultHitTestChildren(result, position: position);
+
+  @override
+  void performLayout() {
+    var w = constraints.maxWidth;
+    int size_ = getSize(w);
+    RenderBox? child = firstChild;
+    if (child != null) {
+      var l = _Layout(child: child);
+      _performLayoutArray(layout_, size_, w, l);
+
+      if (!sizedByParent) {
+        size = Size(w, l.cury);
+      }
+    } else {
+      if (!sizedByParent) {
+        size = Size.zero;
+      }
+    }
+    //  size = Size(constraints.maxWidth, height);
+  }
+
+  void _performLayoutArray(
+      List<R> rows, int size, double maxsize, _Layout layout) {
+    for (var row in rows) {
+      _performLayoutRow(row, size, maxsize, layout);
+    }
+  }
+
+  void _performLayoutRow(R row, int size, double maxsize, _Layout layout) {
+    List<C> currentrow = [];
+
+    for (var column in row.columns) {
+      int colsize = column.getSize(size, layout);
+      int coloffset = column.getOffset(size, layout);
+      double realw = maxsize * colsize / 12;
+
+      MyParentData? childParentData;
+      RenderBox? child;
+
+      if (column.data != null) {
+        if (column.data is R) {
+          _performLayoutRow(column.data as R, size, realw, layout);
+        } else if (column.data is List<R>) {
+          _performLayoutArray(column.data as List<R>, size, realw, layout);
+        } else {
+          // if (column._widget != null) {
+          child = layout.child;
+          childParentData = child!.parentData as MyParentData;
+
+          child.layout(BoxConstraints(maxWidth: realw), parentUsesSize: true);
+          //childConstraints = BoxConstraints.tight(child.size);
+
+          /*widgetSize =
+                layoutChild(column._id, BoxConstraints(maxWidth: realw));
+            widgetSize =
+                layout.child!.getDryLayout(BoxConstraints(maxWidth: realw));
+*/
+          /*   column._width = realw;*/
+          layout.child = childParentData.nextSibling;
+          //   }
+        }
+      }
+      // break, will overthrow
+      if (currentrow.isNotEmpty && layout.col + coloffset + colsize > 12) {
+        layout.newRow();
+        currentrow = [];
+      }
+      if (child != null && childParentData != null) {
+        //check height for line
+        if (layout.maxy < child.size.height) {
+          layout.maxy = child.size.height;
+        }
+        layout.x += coloffset * realw / 12;
+        //set position of child
+        childParentData.offset = Offset(layout.x, layout.cury);
+
+        layout.x += realw * colsize / 12;
+      }
+      //add offset
+      if (coloffset > 0) {
+        layout.col += coloffset;
+      }
+      currentrow.add(column);
+
+      layout.col += colsize;
+    }
+    layout.newRow();
+  }
+
+  int getSize(double w) {
+    late int size;
+    if (w >= _csToSize['xxl']!) {
+      size = 5;
+    } else if (w >= _csToSize['xl']!) {
+      size = 4;
+    } else if (w >= _csToSize['lg']!) {
+      size = 3;
+    } else if (w >= _csToSize['md']!) {
+      size = 2;
+    } else if (w >= _csToSize['sm']!) {
+      size = 1;
+    } else {
+      size = 0;
+    }
+    return size;
+  }
+}
+
+class MyMultiChildRenderObjectWidget extends MultiChildRenderObjectWidget {
+  final List<R> layout;
+
+  const MyMultiChildRenderObjectWidget(
+      {super.key,
+      required BuildContext context,
+      required super.children,
+      required this.layout});
+
+  @override
+  RenderObject createRenderObject(BuildContext context) {
+    return MyRenderBox(layout_: layout);
   }
 }

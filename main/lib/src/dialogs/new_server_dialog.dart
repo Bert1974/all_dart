@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:main/main.dart';
 
 class NewServerDialog extends StatefulWidget {
-  const NewServerDialog({super.key});
+  final BuildContext context;
+  const NewServerDialog({super.key, required this.context});
 
   @override
   State<NewServerDialog> createState() => _NewServerDialogState();

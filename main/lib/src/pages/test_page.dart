@@ -2,8 +2,6 @@ import 'package:data/data.dart';
 import 'package:flutter/material.dart';
 import 'package:main/main.dart';
 
-import '../dialogs/dialog_parent.dart';
-
 class TestPage extends AppPageStatefulWidget<TestPage> {
   const TestPage({super.key});
 
@@ -37,82 +35,57 @@ class _TestPageState extends State<TestPage> {
 
   @override
   Widget build(BuildContext context) {
-    return /*Padding(
-           padding: const EdgeInsets.all(50.0),
-            child:*/
-        LayoutBuilder(builder: (context, constraints) {
-      BoxConstraints? pageSize = DialogParent.getConstraints(context);
-      print(pageSize ?? 'test');
-      print(constraints);
-      return Column(children: [
-        Expanded(
-            child: SingleChildScrollView(
-          child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                const Text(
-                  'Servers',
-                ),
-                const Divider(),
-                Row(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      const Row(children: []),
-                      Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              height: 51,
-                              child: ElevatedButton(
-                                onPressed: () async {
-                                  showDialogPopup(
-                                      context: context,
-                                      title: 'New server',
-                                      child: const NewServerDialog());
-                                  /*showDialog(
-                                            context: context,
-                                            barrierDismissible: false,
-                                            builder: (BuildContext context) {
-                                              return WidgetPopup(
-                                                title:
-                                                    'Stap 1/2: Producent toevoegen',
-                                                child:
-                                                    IntermediairProducerAddScreen(
-                                                  type: 'producers',
-                                                  name: 'producent',
-                                                  refresh: _getProducers,
-                                                  nextWidget: ProducerAddScreen(
-                                                      getContext: getContext,
-                                                      refresh: _getProducers),
-                                                ),
-                                              );*/
-                                },
-                                child: // Padding(
-                                    //   padding: const EdgeInsets.all(8.0),
-                                    const Row(
-                                  children: [
-                                    Icon(
-                                      Icons.add,
-                                      color: Colors.white,
-                                    ),
-                                    Text(
-                                      "Voeg toe",
-                                      style: TextStyle(
-                                          color: Colors.white, fontSize: 16),
-                                    )
-                                  ],
-                                ),
+    return Column(children: [
+      Expanded(
+          child: SingleChildScrollView(
+        child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              const Text(
+                'Servers',
+              ),
+              const Divider(),
+              Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Row(children: []),
+                    Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            height: 51,
+                            child: ElevatedButton(
+                              onPressed: () async {
+                                showDialogPopup(
+                                    context: context,
+                                    title: 'New server',
+                                    child: NewServerDialog(context: context));
+                              },
+                              child: // Padding(
+                                  //   padding: const EdgeInsets.all(8.0),
+                                  const Row(
+                                children: [
+                                  Icon(
+                                    Icons.add,
+                                    color: Colors.white,
+                                  ),
+                                  Text(
+                                    "Voeg toe",
+                                    style: TextStyle(
+                                        color: Colors.white, fontSize: 16),
+                                  )
+                                ],
                               ),
-                            )
-                          ]),
-                    ]),
-                const SizedBox(height: 10),
-              ]),
-        ))
-      ]);
-    });
+                            ),
+                          )
+                        ]),
+                  ]),
+              const SizedBox(height: 10),
+            ]),
+      ))
+    ]);
   }
 }

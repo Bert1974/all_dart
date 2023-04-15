@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'dialog_parent.dart';
-
 Future<T?> showDialogPopup<T>(
     {required BuildContext context,
     Function(BuildContext context)? onBack,
@@ -11,9 +9,13 @@ Future<T?> showDialogPopup<T>(
   return showDialog<T>(
       context: context,
       barrierDismissible: false,
-      builder: (BuildContext context) {
+      builder: (BuildContext innerContext) {
         return _DialogPopup(
-            title: title, onBack: onBack, onClose: onClose, child: child);
+            context: context,
+            title: title,
+            onBack: onBack,
+            onClose: onClose,
+            child: child);
       });
 }
 
@@ -22,66 +24,70 @@ class _DialogPopup extends StatelessWidget {
   final Function(BuildContext context)? onClose;
   final String title;
   final Widget child;
+  final BuildContext context;
 
   const _DialogPopup(
-      {required this.title, this.onBack, this.onClose, required this.child});
+      {required this.title,
+      this.onBack,
+      this.onClose,
+      required this.context,
+      required this.child});
 
   @override
   Widget build(BuildContext context) {
-    BoxConstraints? pageSize = DialogParent.getConstraints(context);
     return SimpleDialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-      contentPadding: const EdgeInsets.all(20.0),
-      title: const Text('test'),
-      children: [
-        Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                if (onBack != null)
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+        //   contentPadding: const EdgeInsets.all(20.0),
+        //   title: const Text('test'),
+        //  child: Column(
+        children: [
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  if (onBack != null)
+                    IconButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        onBack!(context);
+                      },
+                      icon: const Icon(
+                        Icons.arrow_back_outlined,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
                   IconButton(
                     onPressed: () {
                       Navigator.pop(context);
-                      onBack!(context);
+                      if (onClose != null) {
+                        onClose!(context);
+                      }
                     },
                     icon: const Icon(
-                      Icons.arrow_back_outlined,
-                      color: Colors.grey,
+                      Icons.close,
+                      color: Colors.red,
                     ),
-                  ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                IconButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    if (onClose != null) {
-                      onClose!(context);
-                    }
-                  },
-                  icon: const Icon(
-                    Icons.close,
-                    color: Colors.red,
-                  ),
-                )
-              ],
-            ),
-            const SizedBox(
-              height: 16,
-            ),
-            child
-          ],
-        ),
-      ],
-    );
+                  )
+                ],
+              ),
+              const SizedBox(
+                height: 16,
+              ),
+              child,
+            ],
+          ),
+        ]);
   }
 }
