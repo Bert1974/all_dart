@@ -26,10 +26,9 @@ RUN mkdir /app/
 COPY . /app/
 WORKDIR /app/
 
-RUN ls
 RUN ./build.sh
 
 # Stage 2 - Create the run-time image
 FROM debian:latest
 COPY --from=build-env /app/publish/ /app/publish/
-ENTRYPOINT ["/app/publish/server.exe"]
+ENTRYPOINT ["cd /app/publish && server.exe"]
