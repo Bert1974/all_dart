@@ -8,7 +8,9 @@ RUN apt-get install -y curl git wget unzip libgconf-2-4 gdb libstdc++6 libglu1-m
 RUN apt-get clean
 RUN mkdir tmp2
 RUN cd tmp2
+RUN bash
 RUN bash <(curl -s https://raw.githubusercontent.com/objectbox/objectbox-go/main/install.sh)
+RUN exit
 RUN ls
 
 # Clone the flutter repo
