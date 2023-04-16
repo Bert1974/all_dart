@@ -1,9 +1,9 @@
 #Stage 1 - Install dependencies and build the app
 FROM debian:latest AS build-env
 EXPOSE 2222
+SHELL ["/bin/bash", "-c"]
 
 # Install flutter dependencies
-SHELL ["/bin/bash", "-c"]
 RUN apt-get update 
 RUN apt-get install -y curl git wget unzip libgconf-2-4 gdb libstdc++6 libglu1-mesa fonts-droid-fallback lib32stdc++6 python3 golang
 RUN apt-get clean
@@ -31,6 +31,7 @@ RUN bash ./build.sh
 
 # Stage 2 - Create the run-time image
 FROM debian:latest
+SHELL ["/bin/bash", "-c"]
 WORKDIR /app/publish
 RUN bash <(curl -s https://raw.githubusercontent.com/objectbox/objectbox-go/main/install.sh)
 COPY --from=build-env /app/publish/ /app/publish/
