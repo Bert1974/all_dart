@@ -3,12 +3,13 @@ FROM debian:latest AS build-env
 EXPOSE 2222
 
 # Install flutter dependencies
+SHELL ["/bin/bash", "-c"]
 RUN apt-get update 
 RUN apt-get install -y curl git wget unzip libgconf-2-4 gdb libstdc++6 libglu1-mesa fonts-droid-fallback lib32stdc++6 python3 golang
 RUN apt-get clean
 RUN mkdir tmp2
 RUN cd tmp2
-RUN ["/bin/bash", "bash <(curl -s https://raw.githubusercontent.com/objectbox/objectbox-go/main/install.sh)"]
+RUN bash <(curl -s https://raw.githubusercontent.com/objectbox/objectbox-go/main/install.sh)
 RUN exit
 RUN ls
 
