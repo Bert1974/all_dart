@@ -5,7 +5,6 @@ dart run build_runner build
 cd ..
 cd server
 dart pub get
-bash <(curl -s https://raw.githubusercontent.com/objectbox/objectbox-go/main/install.sh)
 dart run build_runner build
 dart compile exe bin/server.dart -o ../publish/server.exe
 cp lib/objectbox.* ../publish/
