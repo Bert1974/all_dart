@@ -114,19 +114,44 @@ Map<String, double?> _csToSize = {
 
 class _Layout {
   int row = 0, col = 0;
-  double cury = 0, maxy = 0;
+  double cury = 0, maxy = 0, maxw = 0;
   double x = 0;
-  RenderBox? child;
+  RenderBox? _child;
+  final _Layout? owner;
 
-  _Layout({this.child});
+  RenderBox? get child => owner?.child ?? _child;
+  set child(RenderBox? value) {
+    if (owner != null) {
+      owner!.child = value;
+    } else {
+      _child = value;
+    }
+  }
 
-  void newRow() {
+  _Layout({RenderBox? child, this.owner}) : _child = child;
+
+  void newRow(double rowWidth) {
+    var ww = rowWidth * 12;
+    if (maxw < ww) {
+      maxw = ww;
+    }
     row++;
     col = 0;
     cury += maxy;
     maxy = 0;
     x = 0;
   }
+
+  Size pop() {
+    owner!.cury += cury;
+
+    if (owner!.maxw < maxw) {
+      owner!.maxw = maxw;
+    }
+    return Size(maxw, cury);
+  }
+
+  //Size toSize() => Size(maxw, cury);
 }
 
 extension _CExtension on C {
@@ -292,72 +317,83 @@ class MyRenderBox extends RenderBox
     RenderBox? child = firstChild;
     if (child != null) {
       var l = _Layout(child: child);
-      _computeDryLayoutArray(layout_, size_, w, l);
-
-      return Size(w, l.maxy);
+      return _computeDryLayoutArray(layout_, size_, w, l);
     }
     return Size.zero;
   }
 
-  void _computeDryLayoutArray(
-      List<R> rows, int size, double maxsize, _Layout layout) {
+  Size _computeDryLayoutArray(
+      List<R> rows, int size, double maxsize, _Layout layout_) {
+    _Layout layout2 = _Layout(owner: layout_);
     for (var row in rows) {
-      _computeDryLayoutRow(row, size, maxsize, layout);
+      _computeDryLayoutRow(row, size, maxsize, layout2);
     }
+    if (layout_.maxw < layout2.maxw) {
+      layout_.maxw = layout2.maxw;
+    }
+    return layout2.pop();
   }
 
-  void _computeDryLayoutRow(R row, int size, double maxsize, _Layout layout) {
+  Size _computeDryLayoutRow(R row, int size, double maxsize, _Layout layout_) {
+    _Layout layout2 = _Layout(owner: layout_);
     List<C> currentrow = [];
+    double rowWidth = 0;
 
     for (var column in row.columns) {
-      int colsize = column.getSize(size, layout);
-      int coloffset = column.getOffset(size, layout);
+      int colsize = column.getSize(size, layout2);
+      int coloffset = column.getOffset(size, layout2);
       double realw = maxsize * colsize / 12;
 
       Size widgetSize = Size.zero;
 
       if (column.data != null) {
         if (column.data is R) {
-          _computeDryLayoutRow(column.data as R, size, realw, layout);
+          widgetSize =
+              _computeDryLayoutRow(column.data as R, size, realw, layout2);
         } else if (column.data is List<R>) {
-          _computeDryLayoutArray(column.data as List<R>, size, realw, layout);
+          widgetSize = _computeDryLayoutArray(
+              column.data as List<R>, size, realw, layout2);
         } else {
           //if (column._widget != null) {
           final MyParentData childParentData =
-              layout.child!.parentData as MyParentData;
+              layout2.child!.parentData as MyParentData;
 
-          widgetSize =
-              layout.child!.getDryLayout(BoxConstraints(maxWidth: realw));
+          var widgetHeight = layout2.child!.getMaxIntrinsicHeight(realw);
+          var widgetWidth = layout2.child!.getMaxIntrinsicWidth(widgetHeight);
 
-          layout.child = childParentData.nextSibling;
+          widgetSize = Size(widgetWidth, widgetHeight);
+          //         layout2.child!.getDryLayout(BoxConstraints(maxWidth: realw));
+
+          layout2.child = childParentData.nextSibling;
           // }
         }
       }
       // break, will overthrow
-      if (currentrow.isNotEmpty && layout.col + coloffset + colsize > 12) {
-        _computeLayout(widgetSize, layout);
+      if (currentrow.isNotEmpty && layout2.col + coloffset + colsize > 12) {
+        layout2.newRow(rowWidth);
         currentrow = [];
+        rowWidth = 0;
+      }
+      if (rowWidth < widgetSize.width / colsize) {
+        rowWidth = widgetSize.width / colsize;
+      }
+      if (layout2.maxy < widgetSize.height) {
+        layout2.maxy = widgetSize.height;
       }
       //check height for line
-      if (layout.maxy < widgetSize.height) {
-        layout.maxy = widgetSize.height;
+      if (layout2.maxy < widgetSize.height) {
+        layout2.maxy = widgetSize.height;
       }
       //add offset
       if (coloffset > 0) {
-        layout.col += coloffset;
+        layout2.col += coloffset;
       }
       currentrow.add(column);
 
-      layout.col += colsize;
+      layout2.col += colsize;
     }
-    _computeLayout(Size.zero, layout);
-  }
-
-  _computeLayout(Size widgetSize, _Layout layout) {
-    if (layout.maxy < widgetSize.height) {
-      layout.maxy = widgetSize.height;
-    }
-    layout.newRow();
+    layout2.newRow(rowWidth);
+    return layout2.pop();
   }
 
   @override
@@ -372,15 +408,31 @@ class MyRenderBox extends RenderBox
 
   @override
   void performLayout() {
-    var w = constraints.maxWidth;
+    var prefsize = computeDryLayout(constraints);
+
+    var w = prefsize.width;
+
+    if (w > constraints.maxWidth) {
+      w = constraints.maxWidth;
+    }
+    if (w < constraints.minWidth) {
+      w = constraints.minWidth;
+    }
+
     int size_ = getSize(w);
     RenderBox? child = firstChild;
     if (child != null) {
       var l = _Layout(child: child);
-      _performLayoutArray(layout_, size_, w, l);
+      Size finalSize = _performLayoutArray(layout_, size_, w, l);
 
+      if (finalSize.width > constraints.maxWidth) {
+        finalSize = Size(constraints.maxWidth, finalSize.height);
+      }
+      if (finalSize.height > constraints.maxHeight) {
+        finalSize = Size(finalSize.width, constraints.maxHeight);
+      }
       if (!sizedByParent) {
-        size = Size(w, l.cury);
+        size = finalSize;
       }
     } else {
       if (!sizedByParent) {
@@ -390,32 +442,39 @@ class MyRenderBox extends RenderBox
     //  size = Size(constraints.maxWidth, height);
   }
 
-  void _performLayoutArray(
-      List<R> rows, int size, double maxsize, _Layout layout) {
+  Size _performLayoutArray(
+      List<R> rows, int size, double maxsize, _Layout layout_) {
+    _Layout layout2 = _Layout(owner: layout_);
     for (var row in rows) {
-      _performLayoutRow(row, size, maxsize, layout);
+      _performLayoutRow(row, size, maxsize, layout2);
     }
+    return layout2.pop();
   }
 
-  void _performLayoutRow(R row, int size, double maxsize, _Layout layout) {
+  Size _performLayoutRow(R row, int size, double maxsize, _Layout layout_) {
+    _Layout layout2 = _Layout(owner: layout_);
     List<C> currentrow = [];
+    double rowWidth = 0;
 
     for (var column in row.columns) {
-      int colsize = column.getSize(size, layout);
-      int coloffset = column.getOffset(size, layout);
+      int colsize = column.getSize(size, layout2);
+      int coloffset = column.getOffset(size, layout2);
       double realw = maxsize * colsize / 12;
 
       MyParentData? childParentData;
       RenderBox? child;
+      Size widgetSize = Size.zero;
 
       if (column.data != null) {
         if (column.data is R) {
-          _performLayoutRow(column.data as R, size, realw, layout);
+          widgetSize =
+              _performLayoutRow(column.data as R, size, realw, layout2);
         } else if (column.data is List<R>) {
-          _performLayoutArray(column.data as List<R>, size, realw, layout);
+          widgetSize =
+              _performLayoutArray(column.data as List<R>, size, realw, layout2);
         } else {
           // if (column._widget != null) {
-          child = layout.child;
+          child = layout2.child;
           childParentData = child!.parentData as MyParentData;
 
           child.layout(BoxConstraints(maxWidth: realw), parentUsesSize: true);
@@ -427,35 +486,41 @@ class MyRenderBox extends RenderBox
                 layout.child!.getDryLayout(BoxConstraints(maxWidth: realw));
 */
           /*   column._width = realw;*/
-          layout.child = childParentData.nextSibling;
+          layout2.child = childParentData.nextSibling;
+
+          widgetSize = child.size;
           //   }
         }
       }
       // break, will overthrow
-      if (currentrow.isNotEmpty && layout.col + coloffset + colsize > 12) {
-        layout.newRow();
+      if (currentrow.isNotEmpty && layout2.col + coloffset + colsize > 12) {
+        layout2.newRow(rowWidth);
         currentrow = [];
+        rowWidth = 0;
       }
-      if (child != null && childParentData != null) {
-        //check height for line
-        if (layout.maxy < child.size.height) {
-          layout.maxy = child.size.height;
-        }
-        layout.x += coloffset * realw / 12;
-        //set position of child
-        childParentData.offset = Offset(layout.x, layout.cury);
+      if (rowWidth < widgetSize.width / colsize) {
+        rowWidth = widgetSize.width / colsize;
+      }
+      //check height for line
+      if (layout2.maxy < widgetSize.height) {
+        layout2.maxy = widgetSize.height;
+      }
+      layout2.x += coloffset * realw / 12;
+      //set position of child
+      childParentData?.offset = Offset(layout2.x, layout2.cury);
 
-        layout.x += realw * colsize / 12;
-      }
+      layout2.x += realw * colsize / 12;
+
       //add offset
       if (coloffset > 0) {
-        layout.col += coloffset;
+        layout2.col += coloffset;
       }
       currentrow.add(column);
 
-      layout.col += colsize;
+      layout2.col += colsize;
     }
-    layout.newRow();
+    layout2.newRow(rowWidth);
+    return layout2.pop();
   }
 
   int getSize(double w) {
