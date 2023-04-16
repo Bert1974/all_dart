@@ -37,7 +37,7 @@ class _DialogPopup extends StatelessWidget {
   Widget build(BuildContext context) {
     return SimpleDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-        //   contentPadding: const EdgeInsets.all(20.0),
+           contentPadding: const EdgeInsets.all(10),
         //   title: const Text('test'),
         //  child: Column(
         children: [
@@ -45,6 +45,7 @@ class _DialogPopup extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Row(
+            mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   if (onBack != null)
