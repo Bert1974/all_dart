@@ -33,7 +33,7 @@ RUN bash ./build.sh
 FROM debian:latest
 SHELL ["/bin/bash", "-c"]
 RUN apt-get update 
-RUN apt-get install -y curl
+RUN apt-get install -y curl golang
 RUN apt-get clean
 RUN bash <(curl -s https://raw.githubusercontent.com/objectbox/objectbox-go/main/install.sh)
 WORKDIR /app/publish
