@@ -36,9 +36,7 @@ class _PropertiesEditState extends State<PropertiesEdit> {
   Widget build(BuildContext context) {
     if (widget.layout != null) {
       return RowColLayout(
-          layout: widget.layout!,
-          lookupfunction: _lookupfunction,
-          useScreenSize: false);
+          layout: widget.layout!, lookupfunction: _lookupfunction);
     }
     throw Exception('unimplemented');
     // return Column(

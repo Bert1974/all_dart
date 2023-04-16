@@ -35,23 +35,23 @@ class _NewServerDialogState extends State<NewServerDialog> {
             builder: (innerContext2) => Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    PropertiesEdit(
-                        /*  variables: [
-                                              Variable("Login", Var2.text),
-                                              Variable(
-                                                  "Password", Var2.password),
-                                            ],*/
-                        layout: _layout(context),
-                        target: _server,
-                        disabled: isDisbled,
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        onChanged: (cell, value) {
-                          setState(() {
-                            cell!.setValue(_server, value);
-                          });
-                        },
-                        onSubmit: (cell, value) async {},
-                        onClicked: (cell) async {}),
+                    Row(mainAxisSize: MainAxisSize.max, children: [
+                      Expanded(
+                        child: PropertiesEdit(
+                            layout: _layout(context),
+                            target: _server,
+                            disabled: isDisbled,
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
+                            onChanged: (cell, value) {
+                              setState(() {
+                                cell!.setValue(_server, value);
+                              });
+                            },
+                            onSubmit: (cell, value) async {},
+                            onClicked: (cell) async {}),
+                      )
+                    ]),
                     const SizedBox(
                       height: 12.0,
                     ),
