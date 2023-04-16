@@ -10,8 +10,7 @@ RUN apt-get clean
 RUN mkdir tmp2
 RUN cd tmp2
 RUN bash <(curl -s https://raw.githubusercontent.com/objectbox/objectbox-go/main/install.sh)
-RUN exit
-RUN ls
+RUN ls tmp2
 
 # Clone the flutter repo
 RUN git clone https://github.com/flutter/flutter.git /usr/local/flutter
