@@ -32,4 +32,4 @@ RUN ./build.sh
 # Stage 2 - Create the run-time image
 FROM debian:latest
 COPY --from=build-env /app/publish/ /app/publish/
-ENTRYPOINT ["server.exe"]
+ENTRYPOINT ["/app/publish/server.exe"]
