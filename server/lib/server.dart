@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:alfred/alfred.dart';
@@ -12,6 +13,7 @@ const secretPassphrase = '123secretjwt';
 const String databaseDirectory = "database";
 const serverPort = 2222;
 const serverUrl = "192.168.178.15";
+const webdir="../publish/web/";
 
 response(String message, dynamic data, bool success) {
   return <String, dynamic>{
@@ -123,29 +125,31 @@ void startServer(data) async {
   connection = Database.openStore(databaseDirectory)!;
   connection.setReference(reference);
 
-  final app = Alfred();
+  final app = Alfred(onNotFound: (req, res) {
+    return File('${webdir}index.html');
+  });
 
   app.all('*', cors(/*origin: '127.0.0.1:2222')*/));
 
-  app.auth('/user/setting', (req, res, connection, user) async {
+  app.auth('/api/user/setting', (req, res, connection, user) async {
     final body = (await req.body) as Map<String, dynamic>;
     await connection.saveUserSettings(user, body['type'], body['data']);
     return responseOk();
   });
-  app.auth('/servers', (req, res, connection, user) async {
+  app.auth('/api/servers', (req, res, connection, user) async {
     return responseResult<List<Server>>(await connection.getServers(user),
         (List<Server> data) => data.map((s) => s.toJson() as dynamic).toList());
   });
-  app.auth('/save_server', (req, res, connection, user) async {
+  app.auth('/api/save_server', (req, res, connection, user) async {
     final body = (await req.body) as Map<String, dynamic>;
     return responseResult<bool>(
         await connection.saveServer(user, Server.fromJson(body)),
         (bool data) => data);
   });
-  app.auth('/currentuser', (req, res, connection, user) async {
+  app.auth('/api/currentuser', (req, res, connection, user) async {
     return responseData(<String, dynamic>{'user': user});
   });
-  app.post('/login', (req, res) async {
+  app.post('/api/login', (req, res) async {
     try {
       var connection = getConnection(req);
       final body = (await req.body) as Map<String, dynamic>;
@@ -182,6 +186,9 @@ void startServer(data) async {
       onClose: (ws) {},
       onMessage: (ws, dynamic data) async {},
     );
+  });
+  app.get('*', (req, res) {
+    return Directory(webdir);
   });
   await app.listen(serverPort, serverUrl);
 }
