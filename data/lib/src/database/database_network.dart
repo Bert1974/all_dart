@@ -46,7 +46,7 @@ class NetworkDatabase extends Database {
   @override
   FutureOr<Result<User>> login(String name, String password) async {
     var res =
-        await _nw().postData('login', {'name': name, 'password': password});
+        await _nw().postData('api/login', {'name': name, 'password': password});
     if (res.success) {
       _token = res.data['token'];
       var user = User.fromJson(res.data['user']);
@@ -59,7 +59,7 @@ class NetworkDatabase extends Database {
   Future<Result<bool>> saveUserSettings(
       User user, String type, Map<String, dynamic> data) async {
     var res =
-        await _nw().postData('user/setting', {'type': type, 'data': data});
+        await _nw().postData('api/user/setting', {'type': type, 'data': data});
 
     if (res.success) {
       return Result.value(true);
@@ -69,7 +69,7 @@ class NetworkDatabase extends Database {
 
   @override
   Future<User?> check(User user) async {
-    var res = await _nw().postData('currentuser', {});
+    var res = await _nw().postData('api/currentuser', {});
     if (res.success) {
       return User.fromJson(res.data['user']);
     }
@@ -78,7 +78,7 @@ class NetworkDatabase extends Database {
 
   @override
   FutureOr<Result<List<Server>>> getServers(User user) async {
-    var res = await _nw().postData('servers', {});
+    var res = await _nw().postData('api/servers', {});
     if (res.success) {
       return Result.value((res.data as List<dynamic>)
           .map((json) => Server.fromJson(json))
@@ -89,7 +89,7 @@ class NetworkDatabase extends Database {
 
   @override
   FutureOr<Result<bool>> saveServer(User user, Server server) async {
-    var res = await _nw().postData('save_server', server.toJson());
+    var res = await _nw().postData('api/save_server', server.toJson());
     if (res.success) {
       return Result.value(true);
     }
