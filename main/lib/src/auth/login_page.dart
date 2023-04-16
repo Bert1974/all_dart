@@ -41,7 +41,7 @@ class _LoginPageState extends State<LoginPage> {
               data: Cell(Var2.url, translations.login_server_url,
                   getter: (value) => _storage['server'],
                   setter: (target, value) => _storage['server'] = value)
-                ..required = true),
+                ..required = false),
         ],
         C({'xs': 12},
             data: Cell(Var2.text, translations.login_name, varName: 'name')
@@ -94,7 +94,7 @@ class _LoginPageState extends State<LoginPage> {
             'database': p.join(documentsDirectory, 'database')
           };
         } else if (value == DatabaseTypes.network.index) {
-          _storage = {'type': value, 'server': 'http://192.168.178.15:2222'};
+          _storage = {'type': value, 'server': Configuration.webUrl};
         }
       });
     }
