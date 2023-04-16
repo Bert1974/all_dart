@@ -9,6 +9,7 @@ bash <(curl -s https://raw.githubusercontent.com/objectbox/objectbox-go/main/ins
 dart run build_runner build
 dart compile exe bin/server.dart -o ../publish/server.exe
 cp lib/objectbox.* ../publish/
+cp objectboxlib/lib/objectbox.* ../publish/
 cp config.json ../publish/
 ls lib
 cd ..
