@@ -26,8 +26,10 @@ class _LoginPageState extends State<LoginPage> {
     final translations = AppLocalizations.of(context)!;
     return [
       R([
-        C({'xl': 4, 'md': 12},
-            offsets: {'xl': 4, 'md': 0}, data: _createTypeWidgets),
+        if (Database.checkStore) ...[
+          C({'xl': 4, 'md': 12},
+              offsets: {'xl': 4, 'md': 0}, data: _createTypeWidgets),
+        ],
         if (_storage['type'] == DatabaseTypes.local.index) ...[
           C({'xs': 12},
               data: Cell(Var2.directory, translations.login_database_dir,
@@ -110,51 +112,59 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final translations = AppLocalizations.of(context)!;
-    return Dialog(
-        //  title: const Text('Login'),
-        child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 360),
-            child: Column(mainAxisSize: MainAxisSize.min, children: [
-              Row(children: [Text(translations.login_title)]),
-              /*  if (disabled == 0)*/ ...[
-                Form(
-                    key: const Key("form1"),
-                    child: Builder(
-                        builder: (innerContext2) => PropertiesEdit(
-                            /*  variables: [
+    return widget.pageForScroll(Container(
+        alignment: Alignment.center,
+        child: Dialog(
+            //  title: const Text('Login'),
+            child:
+                // SimpleDialog(
+                //  title: const Text('Login'),
+                //children: [
+                /*     ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 500),
+                    child: */
+                Column(mainAxisSize: MainAxisSize.min, children: [
+          Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [Text(translations.login_title)]),
+          /*  if (disabled == 0)*/ ...[
+            Form(
+                key: const Key("form1"),
+                child: Builder(
+                    builder: (innerContext2) => PropertiesEdit(
+                        /*  variables: [
                                               Variable("Login", Var2.text),
                                               Variable(
                                                   "Password", Var2.password),
                                             ],*/
-                            layout: _layout(context),
-                            target: _login,
-                            disabled: isDisbled,
-                            autovalidateMode:
-                                AutovalidateMode.onUserInteraction,
-                            onChanged: (cell, value) {
-                              setState(() {
-                                cell!.setValue(_login, value);
-                              });
-                            },
-                            onSubmit: (cell, value) async {
-                              await _submit(innerContext2);
-                            },
-                            onClicked: (cell) async {
-                              await _submit(innerContext2);
-                            },
-                            lookupfunction: (n) {
-                              if (n is String) {
-                                if (n == "type") {}
-                                /*  return _login!.lookup((f) {
+                        layout: _layout(context),
+                        target: _login,
+                        disabled: isDisbled,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        onChanged: (cell, value) {
+                          setState(() {
+                            cell!.setValue(_login, value);
+                          });
+                        },
+                        onSubmit: (cell, value) async {
+                          await _submit(innerContext2);
+                        },
+                        onClicked: (cell) async {
+                          await _submit(innerContext2);
+                        },
+                        lookupfunction: (n) {
+                          if (n is String) {
+                            if (n == "type") {}
+                            /*  return _login!.lookup((f) {
                                                     setState(() {
                                                       f();
                                                     });
                                                   }, n);*/
-                              }
-                              return null;
-                            }))),
-              ]
-            ])));
+                          }
+                          return null;
+                        }))),
+          ]
+        ]))));
   }
 
   _submit(BuildContext context) async {
