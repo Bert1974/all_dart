@@ -10,7 +10,6 @@ dart compile exe bin/server.dart -o ../publish/server.exe
 cp lib/objectbox.* ../publish/
 cp objectboxlib/lib/objectbox.* ../publish/
 cp config.json ../publish/
-ls lib
 cd ..
 cd main
 flutter pub get

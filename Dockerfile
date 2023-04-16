@@ -1,5 +1,5 @@
 #Stage 1 - Install dependencies and build the app
-FROM debian:latest AS build-env
+FROM debian:latest AS build-base
 EXPOSE 2222
 SHELL ["/bin/bash", "-c"]
 
@@ -22,19 +22,18 @@ RUN flutter config --enable-web
 # Run flutter doctor
 RUN flutter doctor -v
 
+FROM build-base as build-dev
+SHELL ["/bin/bash", "-c"]
+
 # Copy files to container and build
-RUN mkdir /app/
+WORKDIR /app
 COPY . /app/
-WORKDIR /app/
 
 RUN bash ./build.sh
 
 # Stage 2 - Create the run-time image
 FROM debian:latest
-SHELL ["/bin/bash", "-c"]
-RUN apt-get update 
-RUN apt-get install -y curl golang
-RUN apt-get clean
+SHELL ["/bin/bash", "-c"]W
 RUN bash <(curl -s https://raw.githubusercontent.com/objectbox/objectbox-go/main/install.sh)
 WORKDIR /app/publish
 COPY --from=build-env /app/publish/ /app/publish/
