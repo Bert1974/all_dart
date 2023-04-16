@@ -26,7 +26,7 @@ RUN mkdir /app/
 COPY . /app/
 WORKDIR /app/
 
-RUN ./build.sh
+RUN bash ./build.sh
 
 # Stage 2 - Create the run-time image
 FROM debian:latest
