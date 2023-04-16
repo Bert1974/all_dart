@@ -1,3 +1,4 @@
+mkdir publish
 cd data
 dart pub get
 dart run build_runner build
