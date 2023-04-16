@@ -32,7 +32,7 @@ COPY . /app/
 RUN bash ./build.sh
 
 # Stage 2 - Create the run-time image
-FROM debian:latest
+FROM build-base
 SHELL ["/bin/bash", "-c"]W
 RUN bash <(curl -s https://raw.githubusercontent.com/objectbox/objectbox-go/main/install.sh)
 WORKDIR /app/publish
