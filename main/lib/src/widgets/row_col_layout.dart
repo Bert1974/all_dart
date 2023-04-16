@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -412,12 +414,7 @@ class MyRenderBox extends RenderBox
 
     var w = prefsize.width;
 
-    if (w > constraints.maxWidth) {
-      w = constraints.maxWidth;
-    }
-    if (w < constraints.minWidth) {
-      w = constraints.minWidth;
-    }
+    w = clampDouble(w, constraints.minWidth, constraints.maxWidth);
 
     int size_ = getSize(w);
     RenderBox? child = firstChild;
@@ -425,12 +422,12 @@ class MyRenderBox extends RenderBox
       var l = _Layout(child: child);
       Size finalSize = _performLayoutArray(layout_, size_, w, l);
 
-      if (finalSize.width > constraints.maxWidth) {
-        finalSize = Size(constraints.maxWidth, finalSize.height);
-      }
-      if (finalSize.height > constraints.maxHeight) {
-        finalSize = Size(finalSize.width, constraints.maxHeight);
-      }
+      finalSize = Size(
+          clampDouble(
+              finalSize.width, constraints.minWidth, constraints.maxWidth),
+          clampDouble(
+              finalSize.height, constraints.minHeight, constraints.maxHeight));
+
       if (!sizedByParent) {
         size = finalSize;
       }
@@ -505,11 +502,11 @@ class MyRenderBox extends RenderBox
       if (layout2.maxy < widgetSize.height) {
         layout2.maxy = widgetSize.height;
       }
-      layout2.x += coloffset * realw / 12;
+      layout2.x += coloffset * maxsize / 12;
       //set position of child
       childParentData?.offset = Offset(layout2.x, layout2.cury);
 
-      layout2.x += realw * colsize / 12;
+      layout2.x += realw;
 
       //add offset
       if (coloffset > 0) {
