@@ -1,0 +1,7 @@
+{
+    "databaseDirectory": "database",
+    "webDirectory": "../publish/web/",
+    "serverPort": 2222,
+    "serverUrl": "127.0.0.1",
+    "JWTSecret": "testing"
+}
