@@ -22,7 +22,7 @@ RUN flutter config --enable-web
 # Run flutter doctor
 RUN flutter doctor -v
 
-FROM build-base as build-dev
+FROM build-base as build-env
 SHELL ["/bin/bash", "-c"]
 
 # Copy files to container and build
