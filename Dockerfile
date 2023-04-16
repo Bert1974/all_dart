@@ -32,7 +32,10 @@ RUN bash ./build.sh
 # Stage 2 - Create the run-time image
 FROM debian:latest
 SHELL ["/bin/bash", "-c"]
-WORKDIR /app/publish
+RUN apt-get update 
+RUN apt-get install -y curl
+RUN apt-get clean
 RUN bash <(curl -s https://raw.githubusercontent.com/objectbox/objectbox-go/main/install.sh)
+WORKDIR /app/publish
 COPY --from=build-env /app/publish/ /app/publish/
 ENTRYPOINT ["/bin/bash", "/app/publish/start.sh"]
