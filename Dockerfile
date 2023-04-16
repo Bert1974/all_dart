@@ -38,4 +38,4 @@ COPY --from=build-env /app/publish/ /app/publish/
 RUN ls /
 RUN ls /app
 RUN ls /app/publish
-ENTRYPOINT ["cd /app/publish", "server.exe"]
+ENTRYPOINT ["ls /app","ls /app/publish", "cd /app/publish", "server.exe"]
