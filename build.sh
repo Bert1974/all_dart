@@ -16,3 +16,4 @@ flutter gen-l10n
 flutter build web
 cp -r ./build/web ../publish/
 cd ..
+cp start.sh publish/
