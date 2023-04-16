@@ -139,7 +139,7 @@ Future<bool> loadConfig() async {
     return false;
   }
   webdir = dir;
-  dir = await checkDir(settings['databaseDirectory']);
+  dir = settings['databaseDirectory'];
   if (dir == null) {
     return false;
   }
