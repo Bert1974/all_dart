@@ -7,10 +7,6 @@ SHELL ["/bin/bash", "-c"]
 RUN apt-get update 
 RUN apt-get install -y curl git wget unzip libgconf-2-4 gdb libstdc++6 libglu1-mesa fonts-droid-fallback lib32stdc++6 python3 golang
 RUN apt-get clean
-RUN mkdir tmp2
-RUN cd tmp2
-RUN bash <(curl -s https://raw.githubusercontent.com/objectbox/objectbox-go/main/install.sh)
-RUN ls tmp2
 
 # Clone the flutter repo
 RUN git clone https://github.com/flutter/flutter.git /usr/local/flutter
@@ -36,5 +32,6 @@ RUN bash ./build.sh
 # Stage 2 - Create the run-time image
 FROM debian:latest
 WORKDIR /app/publish
+RUN bash <(curl -s https://raw.githubusercontent.com/objectbox/objectbox-go/main/install.sh)
 COPY --from=build-env /app/publish/ /app/publish/
 ENTRYPOINT ["/bin/bash", "/app/publish/start.sh"]
