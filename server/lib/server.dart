@@ -15,8 +15,8 @@ const configFileName = 'config.json';
 late final String secretPassphrase;
 late final String databaseDirectory;
 late final int serverPort;
-late final  String serverUrl;
-late final String webdir;
+late final String serverUrl;
+late final String? webdir;
 
 response(String message, dynamic data, bool success) {
   return <String, dynamic>{
@@ -133,8 +133,9 @@ Future<bool> loadConfig() async {
   final jsonString = await configFile.readAsString();
   final dynamic settings = jsonDecode(jsonString);
 
-  var dir = await checkDir(settings['webDirectory']);
-  if (dir == null) {
+  String? dir;
+  if (settings['webDirectory'] != null &&
+      (dir = await checkDir(settings['webDirectory'])) == null) {
     return false;
   }
   webdir = dir;
@@ -165,9 +166,12 @@ void startServer(data) async {
     connection = Database.openStore(databaseDirectory)!;
     connection.setReference(reference);
 
-    final app = Alfred(onNotFound: (req, res) {
-      return File('${webdir}index.html');
-    });
+    final app = Alfred(
+        onNotFound: webdir == null
+            ? null
+            : (req, res) {
+                return File('${webdir}index.html');
+              });
 
     app.all('*', cors(/*origin: '127.0.0.1:2222')*/));
 
@@ -229,9 +233,11 @@ void startServer(data) async {
         onMessage: (ws, dynamic data) async {},
       );
     });
-    app.get('*', (req, res) {
-      return Directory(webdir);
-    });
+    if (webdir != null) {
+      app.get('*', (req, res) {
+        return Directory(webdir!);
+      });
+    }
     await app.listen(serverPort, serverUrl);
   }
 }
