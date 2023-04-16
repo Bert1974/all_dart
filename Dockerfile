@@ -34,6 +34,7 @@ RUN ls /app/publish
 
 # Stage 2 - Create the run-time image
 FROM debian:latest
+WORKDIR /app/publish
 COPY --from=build-env /app/publish/ /app/publish/
 RUN ls /
 RUN ls /app
