@@ -13,6 +13,7 @@ SUPPORTED_PLATFORMS=(
 
 for platform in "${SUPPORTED_PLATFORMS[@]}"
 do
+	echo $platform
 	if [[ $platform = w* ]]
 	then
 		ext="zip"
