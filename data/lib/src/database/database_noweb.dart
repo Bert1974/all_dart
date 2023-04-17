@@ -7,9 +7,17 @@ import 'package:data/objectbox.g.dart';
 
 import 'package:data/src/models/models.dart';
 
-Database? openStore_(String? databaseDirectory) =>
-    ObjectBoxDatabase(databaseDirectory ?? '');
-
+Database? openStore_(String? databaseDirectory) {
+  try{
+    return ObjectBoxDatabase(databaseDirectory ?? '');
+  }
+  catch (e){
+    //
+  }
+finally{
+}
+return null;
+}
 extension UserModelExtension on UserModel {
   User toVM(LoginModel login) => User(
       id: id,
