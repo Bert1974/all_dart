@@ -10,7 +10,12 @@ void main(List<String> arguments) async {
   if (await server.loadConfig()) {
     var completer = Completer();
     //final receivePort = ReceivePort();
-    final Database connection = Database.openStore(server.databaseDirectory)!;
+    print('openstore');
+    final Database? connection = Database.openStore(server.databaseDirectory);
+    if (connection==null){
+      print('failed opening store');
+      exit(1);
+    }
     await connection.open();
     var reference = connection.getReference();
 
