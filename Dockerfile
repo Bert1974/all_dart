@@ -1,5 +1,5 @@
 #Stage 1 - Install dependencies and build the app
-FROM debian:latest AS build-base
+FROM debian:latest AS flutter_base
 EXPOSE 2222
 SHELL ["/bin/bash", "-c"]
 
@@ -22,25 +22,18 @@ RUN flutter config --enable-web
 # Run flutter doctor
 RUN flutter doctor -v
 
-RUN mkdir download
-RUN cd download
-RUN ls
-RUN bash <(curl -s https://raw.githubusercontent.com/objectbox/objectbox-c/main/download.sh) -h
-#RUN bash <(curl -s https://raw.githubusercontent.com/objectbox/objectbox-go/main/install.sh)
-RUN ls
-
-#FROM build-base as build-env
-#SHELL ["/bin/bash", "-c"]
+FROM flutter_base AS flutter_build
+SHELL ["/bin/bash", "-c"]
 
 # Copy files to container and build
-#WORKDIR /app
-#COPY . /app/
+WORKDIR /app
+COPY . /app/
 
-#RUN bash ./build.sh
+RUN ./build.sh
 
 # Stage 2 - Create the run-time image
-#FROM build-base
-#SHELL ["/bin/bash", "-c"]W
-#WORKDIR /app/publish
-#COPY --from=build-env /app/publish/ /app/publish/
-#ENTRYPOINT ["/bin/bash", "/app/publish/start.sh"]
+FROM flutter_build as all_dart
+SHELL ["/bin/bash", "-c"]
+WORKDIR /app/publish
+COPY --from=flutter_build /app/publish/ /app/publish/
+ENTRYPOINT ["/bin/bash", "/app/publish/start.sh"]

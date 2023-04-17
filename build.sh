@@ -1,3 +1,4 @@
+#/bin/bash
 mkdir publish
 cd data
 dart pub get

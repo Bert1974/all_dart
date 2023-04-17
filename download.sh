@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cLibVersion=0.18.0
+cLibVersion=0.18.1
 
 SUPPORTED_PLATFORMS=(
 "linux-x64"
@@ -13,15 +13,14 @@ SUPPORTED_PLATFORMS=(
 
 for platform in "${SUPPORTED_PLATFORMS[@]}"
 do
-	echo $platform
 	if [[ $platform = w* ]]
 	then
 		ext="zip"
 	else
 		ext="tar.gz"
 	fi
-   
+
 	downloadUrl=https://github.com/objectbox/objectbox-c/releases/download/v${cLibVersion}/objectbox-${platform}.${ext}
 	echo $downloadUrl
-	curl -s --output "download/objectbox-${platform}.${ext}" $downloadUrl
+	curl -s --output "downloads/objectbox-${platform}.${ext}" $downloadUrl
 done
