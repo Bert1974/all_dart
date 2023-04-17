@@ -8,20 +8,18 @@ import 'package:data/objectbox.g.dart';
 import 'package:data/src/models/models.dart';
 
 Result<Database> openStore_(String? databaseDirectory) {
-  try{
+  try {
     return Result.value(ObjectBoxDatabase(databaseDirectory ?? ''));
-  }
-  catch (e){
+  } catch (e) {
     //
     return Result<Database>.error(e.toString());
-  }
-finally{
-}
+  } finally {}
 }
 
 bool installObjectBox_() {
   return true;
 }
+
 extension UserModelExtension on UserModel {
   User toVM(LoginModel login) => User(
       id: id,
@@ -62,6 +60,7 @@ class ObjectBoxDatabase extends Database {
 
   @override
   Messages get messages => _messages!;
+  Messages get _messages_ => _messages ?? Messages();
 
   Store? get store => _main?._store ?? _store;
 
@@ -129,7 +128,7 @@ class ObjectBoxDatabase extends Database {
     } catch (e) {
       //
       print(e);
-      return Result<bool>.error(_messages!.general.cantopen('ObjectBox'));
+      return Result<bool>.error(_messages_!.general.cantopen('ObjectBox'));
     } finally {}
   }
 
