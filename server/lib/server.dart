@@ -128,7 +128,7 @@ Future<String?> checkDir(String? path) async {
   return null;
 }
 
-Future<bool> loadConfig() async {
+Future<Result<bool>> loadConfig() async {
   final configFile = File(configFileName);
   final jsonString = await configFile.readAsString();
   final dynamic settings = jsonDecode(jsonString);
@@ -136,34 +136,36 @@ Future<bool> loadConfig() async {
   String? dir;
   if (settings['webDirectory'] != null &&
       (dir = await checkDir(settings['webDirectory'])) == null) {
-    return false;
+    return Result<bool>.error('web directory not found');
   }
   webdir = dir;
   dir = settings['databaseDirectory'];
-  if (dir == null) {
-    return false;
+  if (dir == null ) {
+    return Result<bool>.error('no database directory');
   }
   databaseDirectory = dir;
   var jwt = settings['JWTSecret'];
   if (jwt == null || jwt.isEmpty) {
-    return false;
+    return Result<bool>.error('no JW secrect');
   }
   secretPassphrase = jwt;
 
   if (settings['serverPort'] is! int) {
-    return false;
+    return Result<bool>.error('invalid port');
   }
   serverPort = settings['serverPort'];
   serverUrl = settings['serverUrl'];
-  return true;
+  return Result.value(true);
 }
 
 void startServer(data) async {
-  if (await loadConfig()) {
+  
+  if ((await loadConfig()).result??false) {
     //SendPort sendPort = data[0];
     ByteData reference = data[0];
 
-    connection = Database.openStore(databaseDirectory)!;
+    Result<Database> openResult = Database.openStore(databaseDirectory);
+    connection=openResult.result!;
     connection.setReference(reference);
 
     final app = Alfred(
@@ -239,5 +241,7 @@ void startServer(data) async {
       });
     }
     await app.listen(serverPort, serverUrl);
+  } else {
+    print('configuration invalid');
   }
 }

@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:main/main.dart';
 
 import '../dialogs/dialog_parent.dart';
+import 'go_router.dart';
 import 'page_context.dart';
 
 enum MenuCmd { about, logout }
@@ -47,12 +48,13 @@ class AppPageState extends State<AppPage> {
     //  final settings = UserSettingsHandler.of(context);
     //final auth = AuthenticationHandler.of(context);
     final translations = AppLocalizations.of(context)!;
+    var topLevel =rootRoutes.contains(GoRouter.of(context).location);
     return ScaffoldMessenger(
         child: Scaffold(
             appBar: AppBar(
               title: widget.child.title(context),
               leading: Row(mainAxisSize: MainAxisSize.min, children: [
-                if (Navigator.canPop(context))
+                if (!topLevel)
                   AppIconButton(
                     icon: const Icon(Icons.arrow_back),
                     onPressed: () async {

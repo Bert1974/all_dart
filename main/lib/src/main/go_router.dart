@@ -23,6 +23,8 @@ String? _checkAuthenticated(context, state) {
   return null;
 }
 
+final List<String> rootRoutes=["/","/login"];
+
 final appRouter = MyRouter();
 
 class MyRouter extends GoRouter {
