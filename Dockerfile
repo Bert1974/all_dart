@@ -24,7 +24,9 @@ RUN flutter doctor -v
 
 RUN mkdir download
 RUN cd download
-RUN bash <(curl -s https://raw.githubusercontent.com/objectbox/objectbox-go/main/install.sh)
+RUN ls
+RUN bash <(curl -s https://raw.githubusercontent.com/objectbox/objectbox-c/main/download.sh) -h
+#RUN bash <(curl -s https://raw.githubusercontent.com/objectbox/objectbox-go/main/install.sh)
 RUN ls
 
 #FROM build-base as build-env
