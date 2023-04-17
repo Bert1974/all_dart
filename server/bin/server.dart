@@ -20,27 +20,27 @@ void main(List<String> arguments) async {
       exit(1);
     }
     connection = openresult.result!;
-    await connection.open();
-    var reference = connection.getReference();
+    if ((await connection.open()).result ?? false) {
+      var reference = connection.getReference();
 
-    if (true) {
+      if (true) {
 //    connection.seed();
 //    var u = await connection.login("Bert", "123");
+      }
+
+      print('starting $_totalThtreads isolates.');
+
+      for (var i = 0; i < _totalThtreads; i++) {
+        unawaited(Isolate.spawn(server.startServer, [reference]));
+      }
+      var quitSignalListner = ProcessSignal.sigint.watch().listen((signal) {
+        completer.complete(null);
+      });
+
+      await completer.future;
+
+      quitSignalListner.cancel();
     }
-
-    print('starting $_totalThtreads isolates.');
-
-    for (var i = 0; i < _totalThtreads; i++) {
-      unawaited(Isolate.spawn(server.startServer, [reference]));
-    }
-    var quitSignalListner = ProcessSignal.sigint.watch().listen((signal) {
-      completer.complete(null);
-    });
-
-    await completer.future;
-
-    quitSignalListner.cancel();
-
     print('sever exit.');
 
     exit(0);
