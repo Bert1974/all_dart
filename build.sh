@@ -8,8 +8,8 @@ cd server
 dart pub get
 dart run build_runner build
 dart compile exe bin/server.dart -o ../publish/server.exe
-cp lib/objectbox.* ../publish/
-cp objectboxlib/lib/objectbox.* ../publish/
+#cp lib/objectbox.* ../publish/
+#cp objectboxlib/lib/objectbox.* ../publish/
 cp config.json ../publish/
 cd ..
 cd main

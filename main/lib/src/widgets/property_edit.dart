@@ -111,17 +111,19 @@ class PropertyEdit extends FormField<dynamic> {
       case Var2.checkbox:
         return const Text("checkbox");
       case Var2.button:
-        return TextButton(
-          style: TextButton.styleFrom(
-            textStyle: const TextStyle(fontSize: 20),
-          ),
-          onPressed: widget.enabled
-              ? () async {
-                  await widget.onClicked?.call(widget.cell);
-                }
-              : null,
-          child: Text(widget.cell.name!),
-        );
+        return Container(
+            alignment: Alignment.center,
+            child: TextButton(
+              style: TextButton.styleFrom(
+                textStyle: const TextStyle(fontSize: 20),
+              ),
+              onPressed: widget.enabled
+                  ? () async {
+                      await widget.onClicked?.call(widget.cell);
+                    }
+                  : null,
+              child: Text(widget.cell.name!),
+            ));
       case Var2.datetime:
         throw UnsupportedError('Not implemented');
     }

@@ -91,6 +91,14 @@ class AppPageState extends State<AppPage> {
                             await auth.logout(context);
                           }
                           break;
+                        case MenuCmd.about:
+                          {
+                            if (GoRouter.of(context).location != '/about') {
+                              context.push('/about');
+                            }
+                            //await showDialogPopup(context: context, title: 'About' , child: const Text(("ABOUT!!!")));
+                          }
+                          break;
                         default:
                           break;
                       }
