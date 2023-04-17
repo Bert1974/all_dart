@@ -23,5 +23,5 @@ do
    
 	downloadUrl=https://github.com/objectbox/objectbox-c/releases/download/v${cLibVersion}/objectbox-${platform}.${ext}
 	echo $downloadUrl
-	curl -s --output "objectbox-${platform}.${ext}" $downloadUrl
+	curl -s --output "download/objectbox-${platform}.${ext}" $downloadUrl
 done
