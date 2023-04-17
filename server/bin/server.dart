@@ -7,15 +7,19 @@ import 'package:server/server.dart' as server;
 const int _totalThtreads = 4;
 
 void main(List<String> arguments) async {
-  if (await server.loadConfig()) {
+  var r = await server.loadConfig();
+  if (r.result ?? false) {
     var completer = Completer();
     //final receivePort = ReceivePort();
     print('openstore');
-    final Database? connection = Database.openStore(server.databaseDirectory);
-    if (connection==null){
-      print('failed opening store');
+    Database connection;
+    final Result<Database> openresult =
+        Database.openStore(server.databaseDirectory);
+    if (openresult.result == null) {
+      print('failed opening store:${openresult.error!}');
       exit(1);
     }
+    connection = openresult.result!;
     await connection.open();
     var reference = connection.getReference();
 
@@ -41,6 +45,6 @@ void main(List<String> arguments) async {
 
     exit(0);
   } else {
-    print('configuration invalid');
+    print('configuration invalid:${r.error}');
   }
 }

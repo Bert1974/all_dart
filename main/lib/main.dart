@@ -1,6 +1,7 @@
 export 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 export 'src/settings/authentication.dart';
+export 'src/settings/db_handler.dart';
 export 'src/settings/theme_controller.dart';
 export 'src/language.dart';
 

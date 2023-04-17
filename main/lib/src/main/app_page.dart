@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:main/main.dart';
 
 import '../dialogs/dialog_parent.dart';
+import 'go_router.dart';
 import 'page_context.dart';
 
 enum MenuCmd { about, logout }
@@ -47,12 +48,13 @@ class AppPageState extends State<AppPage> {
     //  final settings = UserSettingsHandler.of(context);
     //final auth = AuthenticationHandler.of(context);
     final translations = AppLocalizations.of(context)!;
+    var topLevel =rootRoutes.contains(GoRouter.of(context).location);
     return ScaffoldMessenger(
         child: Scaffold(
             appBar: AppBar(
               title: widget.child.title(context),
               leading: Row(mainAxisSize: MainAxisSize.min, children: [
-                if (Navigator.canPop(context))
+                if (!topLevel)
                   AppIconButton(
                     icon: const Icon(Icons.arrow_back),
                     onPressed: () async {
@@ -89,6 +91,14 @@ class AppPageState extends State<AppPage> {
                         case MenuCmd.logout:
                           {
                             await auth.logout(context);
+                          }
+                          break;
+                        case MenuCmd.about:
+                          {
+                            if (GoRouter.of(context).location != '/about') {
+                              context.push('/about');
+                            }
+                            //await showDialogPopup(context: context, title: 'About' , child: const Text(("ABOUT!!!")));
                           }
                           break;
                         default:
