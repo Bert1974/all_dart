@@ -128,7 +128,7 @@ class ObjectBoxDatabase extends Database {
     } catch (e) {
       //
       print(e);
-      return Result<bool>.error(_messages_!.general.cantopen('ObjectBox'));
+      return Result<bool>.error(_messages_.general.cantopen('ObjectBox'));
     } finally {}
   }
 
