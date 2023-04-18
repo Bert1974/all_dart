@@ -542,7 +542,7 @@ class MyRenderBox extends RenderBox
 class MyMultiChildRenderObjectWidget extends MultiChildRenderObjectWidget {
   final List<R> layout;
 
-  const MyMultiChildRenderObjectWidget(
+  MyMultiChildRenderObjectWidget(
       {super.key,
       required BuildContext context,
       required super.children,

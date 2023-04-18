@@ -8,70 +8,8 @@ import 'package:alfred/alfred.dart';
 import 'package:alfred/src/type_handlers/websocket_type_handler.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:data/data.dart';
+import 'server_funcs.dart';
 import 'package:server/src/localization/servermessages.i18n.dart';
-
-const configFileName = 'config.json';
-
-late final String secretPassphrase;
-late final String databaseDirectory;
-late final int serverPort;
-late final String serverUrl;
-late final String? webdir;
-
-response(String message, dynamic data, bool success) {
-  return <String, dynamic>{
-    'data': data,
-    'message': message,
-    'success': success
-  };
-}
-
-class ServerException {
-  final String message;
-
-  ServerException(this.message);
-}
-
-responseOk() => response('Ok', null, true);
-responseError(String? message) =>
-    response(message ?? "Server error", null, false);
-responseException(e) {
-  /* if (e is ServerException) {
-    return response(e.message, null, false);
-  }*/
-  return response("Server error", null, false);
-}
-
-responseData(dynamic data) => response("Ok", data, true);
-
-responseResult<T>(Result<T> result, dynamic Function(T data) convert) {
-  if (result.result != null) {
-    return responseData(convert(result.result as dynamic));
-  }
-  return responseError(result.error);
-}
-
-Future<Result<User>> _getUser(Database connection, HttpRequest req) async {
-  var header = req.headers.value('Authorization');
-  if (header?.startsWith('Bearer ') ?? false) {
-    var token = header!.substring(7);
-    try {
-      // Verify a token
-      final jwt = JWT.verify(token, SecretKey(secretPassphrase));
-      var userName = jwt.payload['id'];
-      var user = await connection.checkToken(userName, token);
-      if (user != null) {
-        return Result.value(user);
-      }
-      throw ServerException('JWT verify fout');
-    } on JWTExpiredError {
-      throw ServerException('JWT verlopen');
-    } on JWTError {
-      throw ServerException('JWT fout'); // ex: invalid signature
-    }
-  }
-  throw ServerException('Geen toegang');
-}
 
 late final Database connection;
 
@@ -96,31 +34,6 @@ extension JsonListExtenstension<T> on List<T> {
       map((i) => (i as dynamic).toJSon() as Map<String, dynamic>).toList();
 }
 
-extension AlfredExtension on Alfred {
-  HttpRoute auth(
-    String path,
-    FutureOr Function(
-            HttpRequest req, HttpResponse res, Database connection, User user)
-        callback, {
-    List<FutureOr Function(HttpRequest req, HttpResponse res)> middleware =
-        const [],
-  }) {
-    return post(path, (req, res) async {
-      try {
-        var connection = getConnection(req);
-        Result<User> user = await _getUser(connection, req);
-        if (user.result != null) {
-          return callback(req, res, connection, user.result!);
-        }
-        return responseError(user.error);
-      } catch (e) {
-        print(e);
-        return responseException(e);
-      }
-    }, middleware: middleware);
-  }
-}
-
 Future<String?> checkDir(String? path) async {
   if (path != null && path.isNotEmpty) {
     return await Directory(path).exists() ? path : null;
@@ -140,7 +53,7 @@ Future<Result<bool>> loadConfig() async {
   }
   webdir = dir;
   dir = settings['databaseDirectory'];
-  if (dir == null ) {
+  if (dir == null) {
     return Result<bool>.error('no database directory');
   }
   databaseDirectory = dir;
@@ -158,14 +71,38 @@ Future<Result<bool>> loadConfig() async {
   return Result.value(true);
 }
 
+extension AlfredExtension on Alfred {
+  HttpRoute auth(
+    String path,
+    FutureOr Function(
+            HttpRequest req, HttpResponse res, Database connection, User user)
+        callback, {
+    List<FutureOr Function(HttpRequest req, HttpResponse res)> middleware =
+        const [],
+  }) {
+    return post(path, (req, res) async {
+      try {
+        var connection = getConnection(req);
+        Result<User> user = await getUser(connection, req);
+        if (user.result != null) {
+          return callback(req, res, connection, user.result!);
+        }
+        return responseError(user.error);
+      } catch (e) {
+        print(e);
+        return responseException(e);
+      }
+    }, middleware: middleware);
+  }
+}
+
 void startServer(data) async {
-  
-  if ((await loadConfig()).result??false) {
+  if ((await loadConfig()).result ?? false) {
     //SendPort sendPort = data[0];
     ByteData reference = data[0];
 
     Result<Database> openResult = Database.openStore(databaseDirectory);
-    connection=openResult.result!;
+    connection = openResult.result!;
     connection.setReference(reference);
 
     final app = Alfred(
