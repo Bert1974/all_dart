@@ -1,0 +1,30 @@
+workflows:
+  # This workflow is for a normal windows build consisting of the `.exe` file
+  linux-workflow:
+    name: Linux workflow
+    instance_type: linux
+    max_build_duration: 60
+    environment:
+      flutter: beta
+    cache:
+      cache_paths:
+        - ~/.pub-cache
+    scripts:
+      - name: Get Flutter packages
+        script: flutter packages pub get
+      - name: Configure for Windows
+        script: flutter config --enable-windows-desktop
+      - name: Build Linux
+        script: |
+            cd server
+            dart build exe
+      - name: Export bundle
+        script: |
+          cd build/linux/runner/Release
+          7z a -r ../release.zip ./*
+    artifacts:
+      - build/linux/runner/*.zip
+    publishing:
+      email:
+        recipients:
+          - bertbruggeman@ziggo.nl

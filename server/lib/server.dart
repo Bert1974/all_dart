@@ -15,8 +15,8 @@ const configFileName = 'config.json';
 late final String secretPassphrase;
 late final String databaseDirectory;
 late final int serverPort;
-late final  String serverUrl;
-late final String webdir;
+late final String serverUrl;
+late final String? webdir;
 
 response(String message, dynamic data, bool success) {
   return <String, dynamic>{
@@ -128,46 +128,52 @@ Future<String?> checkDir(String? path) async {
   return null;
 }
 
-Future<bool> loadConfig() async {
+Future<Result<bool>> loadConfig() async {
   final configFile = File(configFileName);
   final jsonString = await configFile.readAsString();
   final dynamic settings = jsonDecode(jsonString);
 
-  var dir = await checkDir(settings['webDirectory']);
-  if (dir == null) {
-    return false;
+  String? dir;
+  if (settings['webDirectory'] != null &&
+      (dir = await checkDir(settings['webDirectory'])) == null) {
+    return Result<bool>.error('web directory not found');
   }
   webdir = dir;
-  dir = await checkDir(settings['databaseDirectory']);
-  if (dir == null) {
-    return false;
+  dir = settings['databaseDirectory'];
+  if (dir == null ) {
+    return Result<bool>.error('no database directory');
   }
   databaseDirectory = dir;
   var jwt = settings['JWTSecret'];
   if (jwt == null || jwt.isEmpty) {
-    return false;
+    return Result<bool>.error('no JW secrect');
   }
   secretPassphrase = jwt;
 
   if (settings['serverPort'] is! int) {
-    return false;
+    return Result<bool>.error('invalid port');
   }
   serverPort = settings['serverPort'];
   serverUrl = settings['serverUrl'];
-  return true;
+  return Result.value(true);
 }
 
 void startServer(data) async {
-  if (await loadConfig()) {
+  
+  if ((await loadConfig()).result??false) {
     //SendPort sendPort = data[0];
     ByteData reference = data[0];
 
-    connection = Database.openStore(databaseDirectory)!;
+    Result<Database> openResult = Database.openStore(databaseDirectory);
+    connection=openResult.result!;
     connection.setReference(reference);
 
-    final app = Alfred(onNotFound: (req, res) {
-      return File('${webdir}index.html');
-    });
+    final app = Alfred(
+        onNotFound: webdir == null
+            ? null
+            : (req, res) {
+                return File('${webdir}index.html');
+              });
 
     app.all('*', cors(/*origin: '127.0.0.1:2222')*/));
 
@@ -229,9 +235,13 @@ void startServer(data) async {
         onMessage: (ws, dynamic data) async {},
       );
     });
-    app.get('*', (req, res) {
-      return Directory(webdir);
-    });
+    if (webdir != null) {
+      app.get('*', (req, res) {
+        return Directory(webdir!);
+      });
+    }
     await app.listen(serverPort, serverUrl);
+  } else {
+    print('configuration invalid');
   }
 }

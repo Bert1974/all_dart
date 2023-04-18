@@ -20,10 +20,10 @@ abstract class Database {
 
   factory Database.openNetwork(String server) => NetworkDatabase(server);
 
-  static bool get checkStore => _hasStore ??= openStore_(null) != null;
+  static bool get checkStore => _hasStore ??= openStore_(null).result != null;
 
   //for server
-  static Database? openStore(String databasefile) => openStore_(databasefile);
+  static Result<Database> openStore(String databasefile) => openStore_(databasefile);
 
   Database forLocaleTag(String localeTag);
 
