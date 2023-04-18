@@ -13,7 +13,7 @@ class AboutPage extends AppPageStatefulWidget<AboutPage> {
 }
 
 class _AboutPageState extends State<AboutPage> {
- /* int disabled = 0;
+  /* int disabled = 0;
 
   bool get isDisbled => disabled > 0;
 
@@ -31,7 +31,6 @@ class _AboutPageState extends State<AboutPage> {
   Widget build(BuildContext context) {
     //final translations = AppLocalizations.of(context)!;
     return widget.pageForScroll(Container(
-        alignment: Alignment.center,
-        child:const Column(children:[])));
+        alignment: Alignment.center, child: Column(children: const [])));
   }
 }
