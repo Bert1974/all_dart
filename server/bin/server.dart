@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:isolate';
 import 'package:data/data.dart';
 import 'package:server/server.dart' as server;
+import 'package:server/server_funcs.dart';
 
 const int _totalThtreads = 4;
 
@@ -13,8 +14,7 @@ void main(List<String> arguments) async {
     //final receivePort = ReceivePort();
     print('openstore');
     Database connection;
-    final Result<Database> openresult =
-        Database.openStore(server.databaseDirectory);
+    final Result<Database> openresult = Database.openStore(databaseDirectory);
     if (openresult.result == null) {
       print('failed opening store:${openresult.error!}');
       exit(1);

@@ -50,7 +50,7 @@ class _TestPageState extends State<TestPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    const Row(children: []),
+                    Row(children: const []),
                     Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -66,8 +66,8 @@ class _TestPageState extends State<TestPage> {
                               },
                               child: // Padding(
                                   //   padding: const EdgeInsets.all(8.0),
-                                  const Row(
-                                children: [
+                                  Row(
+                                children: const [
                                   Icon(
                                     Icons.add,
                                     color: Colors.white,

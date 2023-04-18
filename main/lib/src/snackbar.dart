@@ -20,7 +20,7 @@ void showSnackError(BuildContext context, String text) {
 
   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
     backgroundColor: snackBarTheme.backgroundColor,
-    actionOverflowThreshold: snackBarTheme.actionOverflowThreshold,
+    //   actionOverflowThreshold: snackBarTheme.actionOverflowThreshold,
     closeIconColor: snackBarTheme.closeIconColor,
     margin: snackBarTheme.insetPadding,
     shape: snackBarTheme.shape,
